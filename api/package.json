@@ -1,0 +1,27 @@
+{
+  "name": "nownextlater-api",
+  "version": "0.0.1",
+  "author": {
+    "name": "Cathal Mc Ginley",
+    "email": "cathal.nnl@gnostai.org"
+  },
+  "description": "API for NowNextLater To-Do app",
+  "repository": {
+    "type": "git",
+    "url": "TODO"
+  },
+  "dependencies": {
+    "express": "^4.14.0",
+    "hbs": "^4.0.0",
+    "neo4j-driver": "^1.0.2",
+    "underscore": ">=1.8.3"
+  },
+  "license": "AGPL-3.0",
+  "devDependencies": {
+    "del": "^2.2.1",
+    "gulp": "^3.9.1",
+    "gulp-livereload": "^3.8.1",
+    "gulp-nodemon": "^2.1.0",
+    "gulp-plumber": "^1.1.0"
+  }
+}
