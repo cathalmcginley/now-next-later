@@ -2,7 +2,8 @@ var gulp = require('gulp'),
   nodemon = require('gulp-nodemon'),
   plumber = require('gulp-plumber'),
   livereload = require('gulp-livereload'),
-  stylus = require('gulp-stylus');
+  stylus = require('gulp-stylus'),
+  del = require('del');
 
 
 var bower = require('gulp-bower');
@@ -17,6 +18,13 @@ gulp.task('bower', function() { 
          .pipe(gulp.dest(config.bowerDir)) 
 });
 
+
+gulp.task('clean', function() {
+    return del([
+	'**/*~',
+	'**/*.bak'
+    ]);
+});
 
 //gulp.task('bootstrap', function() {
 //   console.log("Foo...");

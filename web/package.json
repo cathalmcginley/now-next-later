@@ -19,6 +19,7 @@
     "serve-favicon": "^2.3.0"
   },
   "devDependencies": {
+    "del": "^2.2.1",
     "gulp": "^3.9.0",
     "gulp-bower": "0.0.13",
     "gulp-livereload": "^3.8.0",
