@@ -1,0 +1,16 @@
+{
+  "name": "nownextlater",
+  "version": "0.0.1",
+  "ignore": [
+    "**/.*",
+    "node_modules",
+    "components"
+  ],
+  "dependencies": {
+    "bootstrap-stylus": "^5.0.2",
+    "ember": "^2.5.1",
+    "angular": "^1.5.5",
+    "jquery": "^2.2.4",
+    "jquery-ui": "^1.11.4"
+  }
+}

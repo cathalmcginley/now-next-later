@@ -1,0 +1,24 @@
+<div class="modal-dialog-box new-task-dialog">
+  <div class="dialog-header">
+    <h2>Add New Task</h2>
+    <div class="close-dialog" ng-click="$ctrl.cancelModalDialog()">&#x274c;</div>
+    <!-- div class="close-dialog" ng-click="$ctrl.cancelModalDialog()">&times;</div -->
+  </div>
+
+  <form id="new-task-dialog-form">
+    <div>
+      <label>Title: </label> <input class="title" type="text">
+    </div>
+    <div>
+      <label>Summary: </label>
+       <textarea class="summary"></textarea>
+     </div>
+     <div>
+       <label>Full Text: </label>
+        <textarea class="fulltext" rows="12"></textarea>
+      </div>
+      <div class="submit-buttons">
+        <button>Add</button>
+      </div>
+  </form>
+</div>

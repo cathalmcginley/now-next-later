@@ -1,0 +1,292 @@
+$column-heading-background-color = #211791
+$now-bg = #c9e700
+$next-bg = #ffe035
+$later-bg = #ff9204
+
+
+$task-column-border-color = #333
+$task-column-background-colorX = #f1f1f1
+
+$task-border-color = #3e3e3e
+$task-background-color = #F5F5F5
+$task-text-color = black
+
+
+body
+  font 14px "Lucida Grande", Helvetica, Arial, sans-serif
+  padding 50px
+  background-color white
+  background-image url("/img/nownextlater-text-logo.png")
+  background-position top left
+  background-attachment scroll
+  background-repeat no-repeat
+  padding-top: 150px
+
+a
+  color #00B7FF
+
+
+/*   * * *   functions   * * *   */
+
+
+
+border-top-radius(n)
+  -webkit-border-top-left-radius n
+  -moz-border-top-left-radius n
+  border-top-left-radius n
+  -webkit-border-top-right-radius n
+  -moz-border-top-right-radius n
+  border-top-right-radius n
+
+border-bottom-radius(n)
+  -webkit-border-bottom-left-radius n
+  -moz-border-bottom-left-radius n
+  border-bottom-left-radius n
+  -webkit-border-bottom-right-radius n
+  -moz-border-bottom-right-radius n
+  border-bottom-right-radius n
+
+
+/*   * * *   buttons and toolbars like 'add task',
+             'filter by project, etc.                    * * *   */
+
+
+.buttons
+
+  margin-bottom 5px
+
+  button.add-task
+    padding 2px 8px 4px 0
+    font-size 1.5em
+    color white
+    font-weight bold
+    background-color $now-bg
+    border-style solid
+    border-width 0
+    border-bottom 3px solid darken($now-bg, 20%)
+  button.add-task:before
+    content: "+"
+    font-size 1.5em
+    font-weight bold
+    padding 2px 10px 4px 10px
+    background-color darken($now-bg, 10%)
+    border-right 1px solid mix($now-bg, #DDD)
+    margin-right 8px
+
+
+/*   * * *   the now/next/later grid   * * *   */
+
+.tasks-rows
+
+
+  .task-column
+    margin 0
+    padding 0
+    border 0px solid $task-column-border-color
+    //background-color $task-column-background-color
+
+    h2.column-heading
+      margin 0
+      padding 8px 4px
+      background-color $column-heading-background-color
+      color #CCC
+      font-variant small-caps
+      font-size 1.9em
+      font-weight bold
+      font-family serif
+      text-align center
+    h2.selected
+      background-color lighten($column-heading-background-color, 30%)
+
+    .compact
+      .full-text
+        display none
+    .task
+      margin 5px
+      background $task-background-color
+      border 2px solid $task-border-color
+      border-top-radius 5px
+      border-bottom-radius 5px
+      margin-bottom 5px
+      .title
+        font-weight bold
+        border-top-radius 3px
+        padding 4px
+        background darken($task-background-color, 7%)
+        border-bottom 1px solid $task-border-color
+        cursor pointer
+      .summary
+        padding 4px
+        font-size small
+      .full-text
+        padding 2px
+        border 1px white dashed
+
+      .projects
+        padding 10px
+
+      .done
+        text-align right
+        padding 4px 10px
+        button
+          font-variant small-caps
+          font-weight bold
+          background-color $now-bg
+          border-color darken($now-bg, 20%)
+
+
+      .dependencies
+        padding 10px
+        span.dep
+          display inline-block
+          margin 2px
+          padding 2px 8px 4px 6px
+          border-top-radius 4px
+          border-bottom-radius 4px
+          font-size small
+          font-weight bold
+
+        .blocked-by:before
+          font-style italic
+          color lighten($task-text-color, 50%)
+          content "Blocked by: "
+          margin-left: -5px
+        .blocked-by
+          span.dep
+            background blue
+            color white
+        .blocks:before
+          font-style italic
+          color lighten($task-text-color, 50%)
+          content "Blocks: "
+          margin-left -5px
+        .blocks
+          span.dep
+            background red
+            color white
+    .created
+      font-size smaller
+      color #AAA
+      padding 2px 6px
+      text-align right
+  .tasks-now
+    h2.column-heading
+      background-color $now-bg
+      color white // black // complement($now-bg)
+
+
+  .tasks-next
+    h2.column-heading
+      background-color $next-bg
+      color white // complement($next-bg)
+
+  .tasks-later
+    h2.column-heading
+      background-color $later-bg
+      color white // complement($later-bg)
+
+
+.now-next-later
+
+  .tasks-now
+    //background-color #f7e4a9
+
+
+/*   * * *   drag and drop   * * *   */
+
+#aButton
+ background-color rgb(255, 253, 198)
+ border 1px solid grey
+ width: 100px
+
+/*   * * *   modal dialog boxes   * * *   */
+
+.visible-modal
+  display block !important
+
+.modal-dialog-bg
+  display none
+  position fixed
+  z-index 1
+  left 0
+  top 0
+  width 100%
+  height 100%
+  overflow auto
+  //background-color rgba(0, 0, 0, 0.4)
+  background-color rgba(155, 155, 155, 0.5)
+
+$dialog-width = 400px
+$label-width = 100px
+$form-input-width = 250px //$dialog-width - $label-width - (2 * 20px) -10px
+
+  .modal-dialog-box
+    background-color white
+    position absolute
+    margin-left 100px
+    margin-top 100px
+    padding 0
+    border 1px solid #888
+    width $dialog-width
+    height 600px
+
+    form
+      margin 20px
+      //border 1px dashed red
+      div
+        clear both
+        padding-bottom 4px
+      label
+        display block
+        width $label-width
+        text-align right
+        float left
+        color darken($now-bg, 50%)
+      input,
+      textarea
+        width $form-input-width
+        margin-bottom 10px
+        float right
+      .submit-buttons
+        button
+          float right
+          padding 2px 6px 2px 0
+          color white
+          font-weight bold
+          background-color $now-bg
+          border-style solid
+          border-width 0
+          border-bottom 3px solid darken($now-bg, 20%)
+        button:before
+          content: "+"
+          font-weight bold
+          padding 2px 6px 2px 6px
+          background-color darken($now-bg, 10%)
+          border-right 1px solid mix($now-bg, #DDD)
+          margin-right 8px
+
+    .dialog-header
+      display relative
+      clear: both
+      h2
+        margin 0
+        padding 4px 8px
+      .close-dialog
+        position:absolute
+        top 0
+        right 0
+        font-size 28px
+        font-weight bold
+        color white
+        padding 6px
+      .close-dialog:hover,
+      .close-dialog:focus
+        color darken($now-bg, 10%)
+        text-decoration none
+        cursor pointer
+
+
+  .new-task-dialog
+    .dialog-header
+      background-color $now-bg
+      color white

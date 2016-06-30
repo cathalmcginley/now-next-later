@@ -1,0 +1,33 @@
+<!doctype html>
+<html lang="en" ng-app="NowNextLater">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width">
+  <title>{{title }}</title>
+  <link rel="stylesheet" href="/css/bootstrap.min.css">
+  <link rel="stylesheet" href="/components/jquery-ui/themes/smoothness/jquery-ui.min.css">
+  <link rel="stylesheet" href="/css/style.css">
+  <link rel="icon" sizes="16x16" href="/favicon.ico" type="image/vnd.microsoft.icon">
+  <link rel="shortcut" href="/favicon.ico">
+
+  <script src="/js/graphlib.min.js"></script>
+  <script src="/js/nownextlater-ui.js"></script>
+  <script src="/components/jquery/dist/jquery.min.js"></script>
+  <script src="/components/jquery-ui/jquery-ui.min.js"></script>
+
+
+  {{#if ENV_DEVELOPMENT}}
+    <script src="http://localhost:35729/livereload.js"></script>
+  {{/if}}
+</head>
+<body>
+
+
+  {{{body}}}
+
+
+  <script src="/components/angular/angular.js"></script>
+  <script src="/js/nownextlater.js"></script>
+
+  </body>
+</html>

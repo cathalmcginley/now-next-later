@@ -1,0 +1,7 @@
+<div class="task" id="$ctrl.task.id" ng-class="{'compact': $ctrl.task.isCompact}">
+<div class="title" ng-click="$ctrl.onTitleClick($ctrl.task)">{{ $ctrl.task.title }}</div>
+<div class="summary">{{ $ctrl.task.summary }}</div>
+<div class="full-text">
+  <p>{{ $ctrl.task.fullText }}</p>
+</div>
+</div>

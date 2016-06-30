@@ -1,0 +1,101 @@
+<div class="tasks-rows now-next-later" ng-controller="DependencyListsController">
+
+  <!-- The Modal -->
+  <div id="new-task-modal-screen" class="modal-dialog-bg" ng-class="{'visible-modal': page.modalVisible}">
+
+
+    <!--  Modal content  ::  New Task Dialog box  -->
+
+    <div class="modal-dialog-box new-task-dialog">
+      <div class="dialog-header">
+        <h2>Add New Task</h2>
+        <!-- div class="close-dialog" ng-click="cancelModalDialog()">&#x274c;</div -->
+        <div class="close-dialog" ng-click="cancelAddNewTaskDialog()">&times;</div>
+      </div>
+
+      <form id="new-task-dialog-form">
+        <div>
+          <label>Title: </label> <input class="title" type="text" ng-model="newTask.title">
+        </div>
+        <div>
+          <label>Summary: </label>
+           <textarea class="summary" ng-model="newTask.summary"></textarea>
+         </div>
+         <div>
+           <label>Full Text: </label>
+            <textarea class="fulltext" rows="12" ng-model="newTask.fullText"></textarea>
+          </div>
+          <div class="submit-buttons">
+            <button ng-click="addNewTask()">Add</button>
+          </div>
+      </form>
+    </div>
+
+
+  </div>
+
+    <div class="buttons">
+      <button class="add-task" type="button" ng-click="showAddNewTaskDialog()">Add Task</button>
+    </div>
+
+
+    <div class="task-column tasks-now col-md-3">
+      <h2 class="column-heading">
+          \{{ taskData.now.heading }}
+      </h2>
+
+      <task-summary ng-repeat="task in taskData.now.tasks" task="task"></task-summary>
+
+<!-- http://webdesign.tutsplus.com/tutorials/quick-tip-easy-css3-checkboxes-and-radio-buttons--webdesign-8953  -->
+
+      <div class="task">
+        <div class="title" ng-click="toggleTaskCompact()">Clear Worktop</div>
+        <div class="summary"><input type="checkbox">Clear boxes, kettle and toaster, and food tray</input></div>
+        <div class="full-text">
+          <p>There may be further info here...</p>
+          <p>Knock dish off table, head butt, cant eat out of my own dish, leave fur on owners clothes, need to chase tail.</p>
+          <p>Knock over christmas tree meowzer! or has closed eyes but still sees you, see owner, run in terror, get video posted to internet for chasing red dot.</p>
+        </div>
+	<div class="done">
+	  <button>&#9634; Done</button>
+	</div>
+        <div class="projects">...</div>
+        <div class="dependencies">
+          <div class="blocked-by">
+            <span class="dep">Lift weights</span>
+            <span class="dep">Look out window</span>
+            <span class="dep">Cook dinner</span>
+          </div>
+          <div class="blocks"><span class="dep">Wash Worktop</span></div>
+        </div>
+        <div class="created">
+          2016-05-29 11:23
+        </div>
+      </div>
+
+    </div>
+
+    <div class="task-column tasks-next col-md-3">
+      <h2 class="column-heading">
+          \{{ taskData.next.heading }}
+      </h2>
+
+      <task-summary ng-repeat="task in taskData.next.tasks" task="task"></task-summary>
+
+    </div>
+
+
+
+    <div class="task-column tasks-later col-md-3">
+      <h2 class="column-heading">
+          \{{ taskData.later.heading }}
+      </h2>
+      <task-summary ng-repeat="task in taskData.later.tasks" task="task"></task-summary>
+    </div>
+
+    <div class="task-column tasks-later-still col-md-3">
+      <h2 class="column-heading">
+          Later Still
+      </h2>
+      <task-summary ng-repeat="task in taskData.laterStill" task="task"></task-summary>
+    </div>
