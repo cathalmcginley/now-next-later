@@ -101,6 +101,8 @@ border-bottom-radius(n)
     .compact
       .full-text
         display none
+      .task-footer
+        display none
     .task
       margin 5px
       background $task-background-color
@@ -125,7 +127,7 @@ border-bottom-radius(n)
       .projects
         padding 10px
 
-      .done
+      .mark-as-done
         text-align right
         padding 4px 10px
         button
@@ -179,16 +181,21 @@ border-bottom-radius(n)
     h2.column-heading
       background-color $next-bg
       color white // complement($next-bg)
+    .mark-as-done
+      display none
 
   .tasks-later
     h2.column-heading
       background-color $later-bg
       color white // complement($later-bg)
+    .mark-as-done
+      display none
 
 
 .now-next-later
 
   .tasks-now
+
     //background-color #f7e4a9
 
 

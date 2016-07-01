@@ -149,7 +149,7 @@ var dependencyListsController = nowNextLaterModule.controller('DependencyListsCo
     console.log($scope);
 });
 
-var taskSummaryController = function() {
+var taskSummaryController = function($http) {
   this.title = "foo";
   this.summary = "wow, such much";
   var onTitleClick = function(task) {
@@ -159,7 +159,23 @@ var taskSummaryController = function() {
     task.isCompact = !task.isCompact;
 
   }
+
   this.onTitleClick = onTitleClick;
+  this.onMarkedDone = function(task) {
+      console.log("onMarkedDone // id :: " + task.id);
+
+      var taskJson = {"uuid":"397e0895-4acc-404c-a664-c0ce392543f1","title":"wash dishes","summary":"listen to audiobook as I do","fullText":"This is a great idea","timeCreated":"2016-06-28T21:24:12.718Z","completed":false,"timeCompleted":null}
+      taskJson['done']  = true;
+
+
+
+      var taskData = JSON.stringify(taskJson);
+      var taskUri = "/users/73489/tasks/" + "397e0895-4acc-404c-a664-c0ce392543f1"; //task.id;
+      var postPromise = $http.put(taskUri, taskData);
+      postPromise.success(function (data, status, headers, config) {
+        console.log("posted : " + status);
+      });
+  }
 };
 
 //var onTitleClick = function() {
@@ -174,17 +190,17 @@ var taskSummaryController = function() {
 //   this.cancelModalDialog = cancelModalDialog;
 // };
 
-nowNextLaterModule.component('taskDialog', {
-  templateUrl: "templates/new-task-dialog.html",
-    controller : ['$attrs', '$scope', function($attrs, $scope) {
-      this.cancelModalDialog = function() {
-        $scope.$parent.cancelModalDialog();
-      };
-    }],
-  bindings: {
-    cancelModalDialog: '&'
-  }
-});
+// nowNextLaterModule.component('taskDialog', {
+//   templateUrl: "templates/new-task-dialog.html",
+//     controller : ['$attrs', '$scope', function($attrs, $scope) {
+//       this.cancelModalDialog = function() {
+//         $scope.$parent.cancelModalDialog();
+//       };
+//     }],
+//   bindings: {
+//     cancelModalDialog: '&'
+//   }
+// });
 
 /*template: '<div class="task" id="$ctrl.task.id" ng-class="{\'compact\': $ctrl.task.isCompact}">' +
 '<div class="title" ng-click="$ctrl.onTitleClick($ctrl.task)">{{ $ctrl.task.title }}</div>' +

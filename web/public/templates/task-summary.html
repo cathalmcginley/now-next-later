@@ -4,4 +4,9 @@
 <div class="full-text">
   <p>{{ $ctrl.task.fullText }}</p>
 </div>
+<div class="task-footer">
+  <div class="mark-as-done">
+    <button ng-click="$ctrl.onMarkedDone($ctrl.task)">&#9634; Done</button>
+  </div>
+</div>
 </div>
