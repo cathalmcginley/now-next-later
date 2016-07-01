@@ -12,8 +12,10 @@
   },
   "dependencies": {
     "express": "^4.14.0",
+    "graphlib": "^2.1.0",
     "hbs": "^4.0.0",
     "neo4j-driver": "^1.0.2",
+    "set-ds": "^0.1.1",
     "underscore": ">=1.8.3"
   },
   "license": "AGPL-3.0",
