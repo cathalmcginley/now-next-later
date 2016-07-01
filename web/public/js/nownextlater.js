@@ -29,6 +29,11 @@ var dependencyListsController = nowNextLaterModule.controller('DependencyListsCo
   function($scope, $http, $timeout) {
 
     //var apiHost = "http://api.nownextlater.io";
+    // if (typeof global !== 'undefined') {
+    //   console.log("node");
+    // } else {
+    //   console.log("browser");
+    // }
 
     var TaskGraph = new graphlib.Graph();
 
@@ -106,6 +111,7 @@ var dependencyListsController = nowNextLaterModule.controller('DependencyListsCo
     }
 
     var debugModal = true; // DEV :: TODO remove this
+    debugModal = false;
     $scope.page.modalVisible = debugModal;
 
     var newEmptyTask = function() {

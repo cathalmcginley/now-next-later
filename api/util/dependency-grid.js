@@ -25,6 +25,7 @@ var _ = require('underscore');
 
 var DependencyGrid = function(graph) {
 
+    this.graph = graph;
     this.levels = [];
 
     

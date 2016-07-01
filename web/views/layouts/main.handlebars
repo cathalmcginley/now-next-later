@@ -19,6 +19,52 @@
   {{#if ENV_DEVELOPMENT}}
     <script src="http://localhost:35729/livereload.js"></script>
   {{/if}}
+
+
+  <script>
+  var changebgdiv1 = function() {
+    $('#div1').addClass('being-dragged');
+    console.log("adding class " + $('#div1').hasClass('being-dragged'));
+
+  }
+  $(function() {
+
+     var dragHandle = function(event) {
+       var titleHtml = $(event.target).html();
+       return $("<div class='drag-handle'>" + titleHtml + "</div>");
+     }
+
+     var draggableOptions = { containment: "#tasks-now-column", revert:'invalid',
+      handle: 'div.title', opacity: 0.9, helper: dragHandle,
+      start: function() {
+        //$('#div1').addClass("being-dragged");
+        $( this ).addClass("being-dragged");
+      },
+      stop: function() {
+          //$('#div1').removeClass("being-dragged");
+          $( this ).removeClass("being-dragged");
+       }
+    };
+    $( "#div1" ).draggable(draggableOptions);
+    $( "#div2" ).draggable(draggableOptions);
+
+    var droppableOptions = {
+      activeClass: "ui-state-default", // lights up possible targets
+      hoverClass: "ui-state-hover",
+      drop: function( event, ui ) {
+        $( this )
+          .addClass( "ui-state-highlight" )
+          .find( "div.summary" )
+            .html( "Dropped!" );
+        var dragId = ui.draggable.attr('id');
+        var dropId = $( this ).attr('id');
+        console.log(dragId + " dropped onto " + dropId);
+      }}
+    $("#div1").droppable(droppableOptions);
+    $("#div2").droppable(droppableOptions);
+
+  });
+  </script>
 </head>
 <body>
 

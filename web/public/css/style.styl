@@ -2,6 +2,7 @@ $column-heading-background-color = #211791
 $now-bg = #c9e700
 $next-bg = #ffe035
 $later-bg = #ff9204
+$later-still-bg = darken($later-bg, 12%)
 
 
 $task-column-border-color = #333
@@ -24,6 +25,7 @@ body
 
 a
   color #00B7FF
+
 
 
 /*   * * *   functions   * * *   */
@@ -191,6 +193,14 @@ border-bottom-radius(n)
     .mark-as-done
       display none
 
+  .tasks-later-still
+    h2.column-heading
+      background-color $later-still-bg
+      color white // complement($later-bg)
+    .mark-as-done
+      display none
+
+
 
 .now-next-later
 
@@ -297,3 +307,37 @@ $form-input-width = 250px //$dialog-width - $label-width - (2 * 20px) -10px
     .dialog-header
       background-color $now-bg
       color white
+
+
+
+
+
+/*  drag-n-drop with jQuery-ui */
+
+$drop-hover-bg = #fcfbf2
+
+.drag-handle {
+  width: 250px;
+  font-weight bold
+  border-top-radius 3px
+  border-bottom-radius 3px
+  padding 4px
+  border 2px solid black;
+  background darken($task-background-color, 7%)
+}
+
+.being-dragged {
+  opacity: 0.4;
+}
+
+.ui-state-default .title {
+  background darken($drop-hover-bg, 7%) !important;
+}
+.ui-state-hover {
+  border-color red !important;
+  background-color: $drop-hover-bg!important;
+}
+.ui-state-highlight {
+  background darken($drop-hover-bg, 7%) !important;
+  background-color: $drop-hover-bg!important;
+}
