@@ -33,27 +33,7 @@ var dependencyListsController = nowNextLaterModule.controller('DependencyListsCo
     var taskHash = {};
     var depGrid = new DependencyGrid(taskGraph);
 
-    //console.log(uuid.v4());
-
-    var createTask = function(uuid, title, summary, fulltext) {
-      //var newUuid = uuid.v4();
-
-      var dummyFulltext = "Lorem ipsum dolor sit amet, consectetur adipiscing elit. Sed quis nisl vulputate, congue leo eget, euismod augue. Nulla consectetur odio nisl, a lacinia felis fermentum quis. Praesent pellentesque est ut dui suscipit, sollicitudin bibendum risus imperdiet. Cras nec orci nec urna ullamcorper fringilla. Curabitur ut ligula tellus. Aliquam pellentesque scelerisque nisl eget placerat. Morbi sollicitudin quam nec iaculis congue. Cras scelerisque non justo sed facilisis. Fusce tincidunt dolor imperdiet ligula pretium maximus. Duis ac dolor sed orci porta bibendum.";
-      return {
-        id: uuid,
-        title: title,
-        summary: summary,
-        fullText: dummyFulltext,
-        created: new Date(),
-        isCompact: true,
-        isVisible: true,
-        blockerOfCurrent: false,
-        blockedByCurrent: false,
-        blockedBy: [],
-        blocks: [],
-        depth: 1
-      };
-    }
+    var userPath = "/users/73489/tasks/";
 
     var TaskSummary = function(taskData) {
       this.taskData = taskData;
@@ -74,44 +54,19 @@ var dependencyListsController = nowNextLaterModule.controller('DependencyListsCo
       this.blocks = [];
       this.depth = 1;
 
+      this.markDone = function() {
+        this.taskData.completed = true;
+        this.taskData.timeCompleted = new Date();
+        markAsDone(this);
+      }
+
+      this.getData = function() {
+        return this.taskData;
+      }
+
 
     }
 
-    // var aa1 = createTask("aa1", "A A One", "Some dummy text");
-    // taskGraph.setNode(aa1);
-    // var aa2 = createTask("aa2", "A A Two", "Some dummy text");
-    // taskGraph.setNode(aa2);
-    // var aa3 = createTask("aa3", "A A Three", "Some dummy text");
-    // taskGraph.setNode(aa3);
-    // var aa4 = createTask("aa4", "A A Four", "Some dummy text");
-    // taskGraph.setNode(aa4);
-    // var aa5 = createTask("aa5", "A A Five", "Some dummy text");
-    // taskGraph.setNode(aa5);
-    //
-    // var bb1 = createTask("bb1", "B B One", "Some dummy text");
-    // taskGraph.setNode(bb1);
-    // var bb2 = createTask("bb2", "B B Two", "Some dummy text");
-    // taskGraph.setNode(bb2);
-    // var bb3 = createTask("bb3", "B B Three", "Some dummy text");
-    // taskGraph.setNode(bb3);
-    //
-    // taskGraph.setEdge(bb1, aa2);
-    // taskGraph.setEdge(bb2, aa3);
-    // taskGraph.setEdge(bb2, aa4);
-    // taskGraph.setEdge(bb3, aa3);
-    // taskGraph.setEdge(bb3, aa5);
-    //
-    // var cc1 = createTask("cc1", "C C One", "Some dummy text");
-    // taskGraph.setNode(cc1);
-    // var cc2 = createTask("cc2", "C C Two", "Some dummy text");
-    // taskGraph.setNode(cc2);
-    // var cc3 = createTask("cc3", "C C Three", "Some dummy text");
-    // taskGraph.setNode(cc3);
-    //
-    // taskGraph.setEdge(cc1, bb1);
-    // taskGraph.setEdge(cc2, bb1);
-    // taskGraph.setEdge(cc2, aa5);
-    // taskGraph.setEdge(cc3, bb3);
 
     var allTaskData = {
       done: [],
@@ -123,7 +78,9 @@ var dependencyListsController = nowNextLaterModule.controller('DependencyListsCo
 
 
     var downloadTasks = function() {
+
       var getPromise = $http.get("/users/73489/tasks/")
+      console.log(taskGraph.nodes());
       getPromise.success(function(data, status, headers, config) {
         console.log("got task data " + status);
         var tasks = data.tasks;
@@ -134,17 +91,34 @@ var dependencyListsController = nowNextLaterModule.controller('DependencyListsCo
           taskHash[taskData.uuid] = taskSum;
           taskGraph.setNode(taskData.uuid);
         }
+        console.log("nodes " + taskGraph.nodes());
+        console.log("sinks " + taskGraph.sinks());
         for (var j=0; j<deps.length; j++) {
           var dep = deps[j];
           taskGraph.setEdge(dep[0], dep[1]);
         }
-        // re-create the dependency grid
-        depGrid = new DependencyGrid(taskGraph);
-        allTaskData.now.tasks = uuidsToTasks(depGrid.now());
-        allTaskData.next.tasks = uuidsToTasks(depGrid.next());
-        allTaskData.later.tasks = uuidsToTasks(depGrid.later());
-        allTaskData.laterStill.tasks = uuidsToTasks(depGrid.laterStill());
+        updateDepGridFromGraph();
       });
+    }
+
+    var updateDepGridFromGraph = function() {
+      // re-create the dependency grid
+      depGrid = new DependencyGrid(taskGraph);
+      //console.log(taskGraph);
+      console.log(JSON.stringify(graphlib.json.write(taskGraph)));
+      console.log("-------------taskGraph");
+      allTaskData.now.tasks = uuidsToTasks(depGrid.now());
+      allTaskData.next.tasks = uuidsToTasks(depGrid.next());
+      allTaskData.later.tasks = uuidsToTasks(depGrid.later());
+      allTaskData.laterStill.tasks = uuidsToTasks(depGrid.laterStill());
+
+      console.log(JSON.stringify(allTaskData));
+
+
+      $timeout(function() {
+        dndEnableAll(taskGraph.nodes());
+      }, 150);
+
     }
 
     downloadTasks();
@@ -212,12 +186,41 @@ var dependencyListsController = nowNextLaterModule.controller('DependencyListsCo
       depGrid.insertNewTask(newUuid);
       updateTaskData();
 
+      //$(function() {
+      $timeout(function() {
+        dndEnableAll([newUuid]);
+        console.log([newUuid] + " done!")
+      }, 150);
+
+       //});
+
       console.log("--------");
       console.log(allTaskData.now);
       console.log(allTaskData.next);
     }
 
-    addTaskToDisplay({"uuid":"504c5a37-04f5-4e9d-b849-3bae011224be","title":"5w34","summary":"","fullText":"","timeCreated":"2016-07-01T10:07:51.279Z","completed":false,"timeCompleted":null});
+
+    // create link  (b) -[:DEPENDS_ON]-> (a)
+    var addRealDependency = function(b, a) {
+      var bPath = userPath + b;
+      var aDepPath = userPath + a + "/dependencies/";
+      var pathData = JSON.stringify({path: bPath})
+      var postPromise = $http.post(aDepPath, pathData);
+      //var postPromise = $http.get(bPath); // HACK
+
+      postPromise.success(function(na, status, headers, config) {
+        console.log("posted : " + status);
+        // TODO rejigger whole graph
+        //fadeIt(a);
+        taskGraph.setEdge(a, b);
+        //$timeout(function() {
+          updateDepGridFromGraph();
+        //}, 1000);
+        //$timeout(function() { downloadTasks(); }, 100);
+      });
+    }
+
+    ////addTaskToDisplay({"uuid":"504c5a37-04f5-4e9d-b849-3bae011224be","title":"5w34","summary":"","fullText":"","timeCreated":"2016-07-01T10:07:51.279Z","completed":false,"timeCompleted":null});
 
     var addNewTask= function() {
       console.log("Add New Task: " + $scope.newTask.title);
@@ -235,11 +238,142 @@ var dependencyListsController = nowNextLaterModule.controller('DependencyListsCo
       $scope.newTask = newEmptyTask();
     }
 
+    var markAsDone = function(task) {
+      console.log("onMarkedDone // id :: " + task.id);
+      var task = taskHash[task.id];
+      //task.markDone();
+      var taskJson = task.getData();
+      var taskData = JSON.stringify(taskJson);
+      var taskUri = userPath + task.id;
+      console.log(taskData);
+      console.log(taskUri);
+      var putPromise = $http.put(taskUri, taskData);
+      ////var putPromise = $http.get(taskUri);
+      putPromise.success(function (data, status, headers, config) {
+       console.log("PUT : " + status);
+       //if (status === 200) {
+
+         fadeIt(task.id);
+       //}
+      });
+
+    }
+
+
+
+
+    // HERE?
+
+    var DragAndDrop = function() {
+
+      var dragHandle = function(event) {
+        var titleHtml = $(event.target).html();
+        return $("<div class='drag-handle'>" + titleHtml + "</div>");
+      }
+
+      // TODO fix to prevent cyclic dependencies in UI
+
+      var draggableOptions = { //containment: "#tasks-now-column",
+       revert:'invalid',
+       handle: 'div.title',
+        opacity: 0.9,
+        helper: dragHandle,
+       start: function() {
+         $( this ).addClass("being-dragged");
+       },
+       stop: function() {
+           $( this ).removeClass("being-dragged");
+        }
+     };
+
+
+     var droppableOptions = {
+       activeClass: "ui-state-default", // lights up possible targets
+       hoverClass: "ui-state-hover",    // lights up when about to be droppped on
+       drop: function( event, ui ) {
+         $( this )
+           .addClass( "ui-state-highlight" );
+           // TODO add red Blocker tag to bottom of div
+           // TODO open up div if not already open
+           //.find( "div.summary" )
+           //   .html( "Dropped!" );
+         var dragId = ui.draggable.attr('id');
+         var dropId = $( this ).attr('id');
+         console.log(dragId + " dropped onto " + dropId);
+         addRealDependency(dropId, dragId);
+         // TODO TODO NOW NOW - POST to 84902aef-849../dependencies/
+       }}
+
+        return {
+          drag: draggableOptions,
+          drop: droppableOptions
+        }
+      }
+
+    var dndOptions = DragAndDrop();
+
+
+    var dndEnable = function(taskUuid) {
+        console.log(typeof taskUuid);
+        var selector = '#' + taskUuid;
+        console.log(">!!> " + selector);
+
+        $(selector).draggable(dndOptions.drag);
+        $(selector).droppable(dndOptions.drop);
+        console.log("done?!!");
+
+    }
+
+    var dndEnableAll = function(uuids) {
+      $(function() {
+        for (var i=0; i<uuids.length; i++) {
+          dndEnable(uuids[i]);
+        }
+      });
+    }
+
+    // HERE?
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+    var fadeIt = function(taskUuid) {
+      console.log("fadeIt " + taskUuid);
+      console.log($('#' + taskUuid).fadeOut(800, function() {
+        // remove DONE task
+        delete taskHash[taskUuid];
+        taskGraph.removeNode(taskUuid);
+        updateDepGridFromGraph();
+      }));
+
+    }
+
 
     $scope.taskData = allTaskData;
     $scope.showAddNewTaskDialog = showAddNewTaskDialog;
     $scope.cancelAddNewTaskDialog = cancelAddNewTaskDialog;
     $scope.addNewTask = addNewTask;
+    $scope.markAsDone = markAsDone;
     console.log($scope);
 });
 
@@ -256,19 +390,8 @@ var taskSummaryController = function($http) {
 
   this.onTitleClick = onTitleClick;
   this.onMarkedDone = function(task) {
-      console.log("onMarkedDone // id :: " + task.id);
+    task.markDone();
 
-      var taskJson = {"uuid":"397e0895-4acc-404c-a664-c0ce392543f1","title":"wash dishes","summary":"listen to audiobook as I do","fullText":"This is a great idea","timeCreated":"2016-06-28T21:24:12.718Z","completed":false,"timeCompleted":null}
-      taskJson['done']  = true;
-
-
-
-      var taskData = JSON.stringify(taskJson);
-      var taskUri = "/users/73489/tasks/" + "397e0895-4acc-404c-a664-c0ce392543f1"; //task.id;
-      var postPromise = $http.put(taskUri, taskData);
-      postPromise.success(function (data, status, headers, config) {
-        console.log("posted : " + status);
-      });
   }
 };
 
@@ -310,6 +433,7 @@ nowNextLaterModule.component('taskSummary', {
   controller: taskSummaryController,
   bindings: {
     task: '=',
-    onTitleClick: '&'
+    onTitleClick: '&',
+    onMarkedDone: '&'
   }
   });

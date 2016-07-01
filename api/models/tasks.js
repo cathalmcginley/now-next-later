@@ -83,6 +83,7 @@ var recordToTask = function(taskUuid, t) {
 
 var getAllTasksQuery = qtemplate("MATCH (u:User {userId: {{q.userId}}})",
   "-[:OWNS]->(t:Task)",
+  "WHERE t.completed = false", // TEMPORARY, until I deal with DONE tasks
   "RETURN t.uuid AS uuid,",
   "t.title AS title, t.summary AS summary,",
   "t.fullText AS fullText, t.timeCreated AS timeCreated,",
@@ -91,6 +92,8 @@ var getAllTasksQuery = qtemplate("MATCH (u:User {userId: {{q.userId}}})",
 var getFullGraphQuery = qtemplate("MATCH (u:User {userId: {{q.userId}}})",
   "-[:OWNS]->(t:Task)",
   "-[:DEPENDS_ON]->(d:Task)",
+  "WHERE d.completed = FALSE", // stop stray null nodes
+  // (caused by links t-owns->d where t is completed and not included in results)
   "RETURN t.uuid, d.uuid");
 
 var getAllTasks = function(userId, callback) {
