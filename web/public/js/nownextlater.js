@@ -28,14 +28,10 @@ var nowNextLaterModule = angular.module('NowNextLater', []);
 var dependencyListsController = nowNextLaterModule.controller('DependencyListsController',
   function($scope, $http, $timeout) {
 
-    //var apiHost = "http://api.nownextlater.io";
-    // if (typeof global !== 'undefined') {
-    //   console.log("node");
-    // } else {
-    //   console.log("browser");
-    // }
 
-    var TaskGraph = new graphlib.Graph();
+    var taskGraph = new graphlib.Graph();
+    var taskHash = {};
+    var depGrid = new DependencyGrid(taskGraph);
 
     //console.log(uuid.v4());
 
@@ -59,52 +55,122 @@ var dependencyListsController = nowNextLaterModule.controller('DependencyListsCo
       };
     }
 
-    var aa1 = createTask("aa1", "A A One", "Some dummy text");
-    TaskGraph.setNode(aa1);
-    var aa2 = createTask("aa2", "A A Two", "Some dummy text");
-    TaskGraph.setNode(aa2);
-    var aa3 = createTask("aa3", "A A Three", "Some dummy text");
-    TaskGraph.setNode(aa3);
-    var aa4 = createTask("aa4", "A A Four", "Some dummy text");
-    TaskGraph.setNode(aa4);
-    var aa5 = createTask("aa5", "A A Five", "Some dummy text");
-    TaskGraph.setNode(aa5);
+    var TaskSummary = function(taskData) {
+      this.taskData = taskData;
+      this.id = taskData.uuid;
+      this.title = taskData.title;
+      this.summary = taskData.summary;
+      this.fullText = taskData.fullText;
 
-    var bb1 = createTask("bb1", "B B One", "Some dummy text");
-    TaskGraph.setNode(bb1);
-    var bb2 = createTask("bb2", "B B Two", "Some dummy text");
-    TaskGraph.setNode(bb2);
-    var bb3 = createTask("bb3", "B B Three", "Some dummy text");
-    TaskGraph.setNode(bb3);
+      var dateString = taskData.timeCreated;
+      taskData.timeCreated = new Date(dateString);
+      this.created = taskData.timeCreated.toISOString();
 
-    TaskGraph.setEdge(bb1, aa2);
-    TaskGraph.setEdge(bb2, aa3);
-    TaskGraph.setEdge(bb2, aa4);
-    TaskGraph.setEdge(bb3, aa3);
-    TaskGraph.setEdge(bb3, aa5);
+      this.isCompact = true;
+      this.isVisible = true;
+      this.blockerOfCurrent = false;
+      this.blockedByCurrent = false;
+      this.blockedBy = [];
+      this.blocks = [];
+      this.depth = 1;
 
-    var cc1 = createTask("cc1", "C C One", "Some dummy text");
-    TaskGraph.setNode(cc1);
-    var cc2 = createTask("cc2", "C C Two", "Some dummy text");
-    TaskGraph.setNode(cc2);
-    var cc3 = createTask("cc3", "C C Three", "Some dummy text");
-    TaskGraph.setNode(cc3);
 
-    TaskGraph.setEdge(cc1, bb1);
-    TaskGraph.setEdge(cc2, bb1);
-    TaskGraph.setEdge(cc2, aa5);
-    TaskGraph.setEdge(cc3, bb3);
+    }
 
-    var TaskData = {
+    // var aa1 = createTask("aa1", "A A One", "Some dummy text");
+    // taskGraph.setNode(aa1);
+    // var aa2 = createTask("aa2", "A A Two", "Some dummy text");
+    // taskGraph.setNode(aa2);
+    // var aa3 = createTask("aa3", "A A Three", "Some dummy text");
+    // taskGraph.setNode(aa3);
+    // var aa4 = createTask("aa4", "A A Four", "Some dummy text");
+    // taskGraph.setNode(aa4);
+    // var aa5 = createTask("aa5", "A A Five", "Some dummy text");
+    // taskGraph.setNode(aa5);
+    //
+    // var bb1 = createTask("bb1", "B B One", "Some dummy text");
+    // taskGraph.setNode(bb1);
+    // var bb2 = createTask("bb2", "B B Two", "Some dummy text");
+    // taskGraph.setNode(bb2);
+    // var bb3 = createTask("bb3", "B B Three", "Some dummy text");
+    // taskGraph.setNode(bb3);
+    //
+    // taskGraph.setEdge(bb1, aa2);
+    // taskGraph.setEdge(bb2, aa3);
+    // taskGraph.setEdge(bb2, aa4);
+    // taskGraph.setEdge(bb3, aa3);
+    // taskGraph.setEdge(bb3, aa5);
+    //
+    // var cc1 = createTask("cc1", "C C One", "Some dummy text");
+    // taskGraph.setNode(cc1);
+    // var cc2 = createTask("cc2", "C C Two", "Some dummy text");
+    // taskGraph.setNode(cc2);
+    // var cc3 = createTask("cc3", "C C Three", "Some dummy text");
+    // taskGraph.setNode(cc3);
+    //
+    // taskGraph.setEdge(cc1, bb1);
+    // taskGraph.setEdge(cc2, bb1);
+    // taskGraph.setEdge(cc2, aa5);
+    // taskGraph.setEdge(cc3, bb3);
+
+    var allTaskData = {
       done: [],
-      now: {heading: "Now", tasks: [aa1, aa2, aa3, aa4, aa5]},
-      next: {heading: "Next", tasks: [bb1, bb2, bb3]},
-      later: {heading: "Later", tasks: [cc1, cc2, cc3]},
+      now: {heading: "Now", tasks: []},
+      next: {heading: "Next", tasks: []},
+      later: {heading: "Later", tasks: []},
       laterStill: {heading: "Later Still", tasks: []}
     };
 
-    var inEdgesAA1 = TaskGraph.inEdges('aa1');
-    aa1.blocks = [];
+
+    var downloadTasks = function() {
+      var getPromise = $http.get("/users/73489/tasks/")
+      getPromise.success(function(data, status, headers, config) {
+        console.log("got task data " + status);
+        var tasks = data.tasks;
+        var deps = data.graph;
+        for (var i=0; i<tasks.length; i++) {
+          var taskData = tasks[i];
+          var taskSum = new TaskSummary(taskData);
+          taskHash[taskData.uuid] = taskSum;
+          taskGraph.setNode(taskData.uuid);
+        }
+        for (var j=0; j<deps.length; j++) {
+          var dep = deps[j];
+          taskGraph.setEdge(dep[0], dep[1]);
+        }
+        // re-create the dependency grid
+        depGrid = new DependencyGrid(taskGraph);
+        allTaskData.now.tasks = uuidsToTasks(depGrid.now());
+        allTaskData.next.tasks = uuidsToTasks(depGrid.next());
+        allTaskData.later.tasks = uuidsToTasks(depGrid.later());
+        allTaskData.laterStill.tasks = uuidsToTasks(depGrid.laterStill());
+      });
+    }
+
+    downloadTasks();
+
+    var uuidsToTasks = function(uuids) {
+      var tasks = [];
+      for (var i=0; i<uuids.length; i++) {
+        tasks.push(taskHash[uuids[i]]);
+      }
+      return tasks;
+      // console.log("!! " + uuids);
+      // return _.map(uuids, new function(u) {
+      //   console.log(u + " >  " + taskHash[u]);
+      //   return taskHash[u];
+      // });
+    }
+
+    var updateTaskData = function() {
+      console.log(depGrid.now());
+      console.log(uuidsToTasks(depGrid.now()));
+      allTaskData.now.tasks = uuidsToTasks(depGrid.now());
+    }
+
+
+    // var inEdgesAA1 = taskGraph.inEdges('aa1');
+    // aa1.blocks = [];
 
     $scope.page = {
       modalVisible: false
@@ -132,14 +198,36 @@ var dependencyListsController = nowNextLaterModule.controller('DependencyListsCo
       $scope.page.modalVisible = false;
     }
 
+    var addTaskToDisplay = function(taskData) {
+      console.log(taskData);
+
+
+      var newUuid = taskData.uuid;
+      var nts = new TaskSummary(taskData);
+      console.log(nts);
+      taskHash[newUuid] = nts;
+      console.log(newUuid);
+      console.log(taskHash);
+      taskGraph.setNode(newUuid);
+      depGrid.insertNewTask(newUuid);
+      updateTaskData();
+
+      console.log("--------");
+      console.log(allTaskData.now);
+      console.log(allTaskData.next);
+    }
+
+    addTaskToDisplay({"uuid":"504c5a37-04f5-4e9d-b849-3bae011224be","title":"5w34","summary":"","fullText":"","timeCreated":"2016-07-01T10:07:51.279Z","completed":false,"timeCompleted":null});
+
     var addNewTask= function() {
       console.log("Add New Task: " + $scope.newTask.title);
       // TODO upload data here!
 
       var taskData = JSON.stringify($scope.newTask);
       var postPromise = $http.post("/users/73489/tasks/", taskData);
-      postPromise.success(function (data, status, headers, config) {
+      postPromise.success(function (taskData, status, headers, config) {
         console.log("posted : " + status);
+        addTaskToDisplay(taskData);
       });
 
 
@@ -148,7 +236,7 @@ var dependencyListsController = nowNextLaterModule.controller('DependencyListsCo
     }
 
 
-    $scope.taskData = TaskData;
+    $scope.taskData = allTaskData;
     $scope.showAddNewTaskDialog = showAddNewTaskDialog;
     $scope.cancelAddNewTaskDialog = cancelAddNewTaskDialog;
     $scope.addNewTask = addNewTask;
