@@ -39,6 +39,8 @@ var Task = function(uuid, title, summary, fullText, timeCreated) {
   this.timeCreated = timeCreated;
   this.completed = false;
   this.timeCompleted = null;
+  this.completed = false;
+  this.timeCompleted = null;
 }
 
 var getTaskQuery = qtemplate("MATCH (u:User {userId: {{ q.userId }}})",
@@ -54,21 +56,88 @@ var getTask = function(userId, taskUuid, callback) {
   console.log(getTaskQuery(q));
   session.run(getTaskQuery(q)).then(function(rslt) {
     if (rslt.records.length === 1) {
-      var t = rslt.records[0];
-      console.log(t);
-      var tc = t.get("timeCreated");
-      console.log("  >>  " + tc + " :: " + (typeof tc));
-      console.log(tc);
-      console.log(tc.toNumber());
-      var created = new Date(tc.toNumber());
-      console.log("  >>> " + created);
-      var task = new Task(taskUuid, t.get("title"), t.get("summary"), t.get("fullText"), created);
-      callback(task, null);
+      callback(recordToTask(taskUuid, rslt.records[0]), null);
     } else {
       callback(null, [404, "Task " + taskUuid + " not found"]);
     }
     session.close();
   });
+}
+
+var recordToTask = function(taskUuid, t) {
+
+  var tCreated = new Date(t.get("timeCreated").toNumber());
+  var tCompleted = null;
+  var tcomp = t.get("timeCompleted");
+  if (tcomp) {
+    tCompleted = new Date(tcomp.toNumber());
+  }
+  console.log("a");
+  var task = new Task(taskUuid, t.get("title"), t.get("summary"), t.get("fullText"), tCreated);
+  console.log("b");
+  task.completed = t.get("completed");
+  task.timeCompleted = tCompleted;
+  console.log(">> " + task);
+  return task;
+}
+
+var getAllTasksQuery = qtemplate("MATCH (u:User {userId: {{q.userId}}})",
+  "-[:OWNS]->(t:Task)",
+  "RETURN t.uuid AS uuid,",
+  "t.title AS title, t.summary AS summary,",
+  "t.fullText AS fullText, t.timeCreated AS timeCreated,",
+  "t.completed AS completed, t.timeCompleted AS timeCompleted");
+
+var getFullGraphQuery = qtemplate("MATCH (u:User {userId: {{q.userId}}})",
+  "-[:OWNS]->(t:Task)",
+  "-[:DEPENDS_ON]->(d:Task)",
+  "RETURN t.uuid, d.uuid");
+
+var getAllTasks = function(userId, callback) {
+  var q = {userId: userId};
+  console.log(getAllTasksQuery(q));
+
+
+  var session = graphdb.session();
+  var tasksPromise = session.run(getAllTasksQuery(q));
+  //
+  // then(function(rslt) {
+  //   var taskList = [];
+  //   for (var i=0; i<rslt.records.length; i++) {
+  //     var tRec = rslt.records[i];
+  //     var taskUuid = tRec.get("uuid");
+  //     taskList.push(recordToTask(taskUuid, tRec));
+  //   }
+  //
+  //   callback(taskList, null);
+  //   session.close();
+  // });
+  var graphPromise = session.run(getFullGraphQuery(q));
+
+  Promise.all([tasksPromise, graphPromise]).then(function(allResults) {
+    var tRslt = allResults[0];
+    var gRslt = allResults[1];
+    var taskList = [];
+    for (var i=0; i<tRslt.records.length; i++) {
+      var tRec = tRslt.records[i];
+      var taskUuid = tRec.get("uuid");
+      taskList.push(recordToTask(taskUuid, tRec));
+    }
+    console.log(taskList.length);
+    var graph = [];
+    for (var i=0; i<gRslt.records.length; i++) {
+      var gRec = gRslt.records[i];
+      var task = gRec.get("t.uuid");
+      var dep = gRec.get("d.uuid");
+      // (task) - [:DEPENDS_ON] -> (dep)
+      graph.push([task, dep]);
+    }
+    var taskGraph = {tasks: taskList, graph: graph};
+    console.log(gRslt.records.length);
+    callback(taskGraph, null);
+  });
+
+
 }
 
 
@@ -148,6 +217,7 @@ var updateTask = function(userId, taskUuid, task, callback) {
   q['timeCompleted'] = new Date(task.timeCompleted).getTime();
   console.log(updateTaskCypher(q));
   var session = graphdb.session();
+  console.log("a");
   session.run(updateTaskCypher(q)).then(function(rslt) {
     console.log(">> !");
     console.log(rslt);
@@ -164,8 +234,8 @@ var updateTask = function(userId, taskUuid, task, callback) {
 module.exports = {
   Task: Task,
   getTask: getTask,
+  getAllTasks: getAllTasks,
   createTask: createTask,
   updateTask: updateTask,
   addDependency: addDependency
-//  toJson: toJson
 }

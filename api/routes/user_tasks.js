@@ -36,6 +36,17 @@ var tasks = require('../models/tasks');
 var router = express.Router({mergeParams: true});
 
 router.route('/')
+  .get(function(req, res) {  //  GET  :  getAllTasks for this user
+    var userId = req.params.user_id;
+    tasks.getAllTasks(userId, function(tasks, err) {
+      if (!err) {
+        console.log(tasks);
+        res.json(tasks);
+      } else {
+        res.status(err[0]).send(err[1]);
+      }
+    });
+  })
   .post(function(req, res) {  // POST : createTask
     var userId = req.params.user_id;
     tasks.createTask(userId, req.body, function(task, err) {
@@ -51,10 +62,10 @@ router.route('/')
    * e.g /now/, /next/, /later/, /later-still/ ...
    */
 
-    router.get('/', function(req, res) {
-      console.log(req.params);
-      res.send("list all tasks for user " + req.params.user_id);
-    });
+
+
+
+
 
     router.route('/done/')
       .get(function(req, res) {
@@ -82,7 +93,7 @@ router.route('/')
  */
 
 router.route('/:task_uuid/')
-  .get(function(req, res) {  // GET : getTask by uuid
+  .get(function(req, res) {  //  GET  :  getTask by uuid
     var userId = req.params.user_id;
     var taskUuid = req.params.task_uuid;
     tasks.getTask(userId, taskUuid, function(task, err) {
@@ -94,18 +105,23 @@ router.route('/:task_uuid/')
       }
     });
   })
-  .put(function(req, res) {  // PUT : updateTask (incl mark as DONE)
+  .put(function(req, res) {  //  PUT  :  updateTask (incl mark as DONE)
     var userId = req.params.user_id;
     var taskUuid = req.params.task_uuid;
     var task = req.body
     tasks.updateTask(userId, taskUuid, task, function(task, err) {
-      res.status(200).json(task);
+      if (!err) {
+        res.status(200).json(task);
+      } else {
+        console.log(err);
+        res.status(err[0]).send(err[1]);
+      }
     });
 
   });
 
 router.route('/:task_uuid/dependencies/')
-    .post(function(req, res) {  // POST : createTask
+    .post(function(req, res) {  //  POST  :  createTask
       var userId = req.params.user_id;
       var taskUuid = req.params.task_uuid;
 
