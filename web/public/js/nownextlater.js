@@ -50,8 +50,8 @@ var dependencyListsController = nowNextLaterModule.controller('DependencyListsCo
       this.isVisible = true;
       this.blockerOfCurrent = false;
       this.blockedByCurrent = false;
-      this.blockedBy = [];
-      this.blocks = [];
+      this.blockedBy = [{title: "Alpha"}];
+      this.blocks = [{title: "Beta"}];
       this.depth = 1;
 
       this.markDone = function() {
@@ -112,7 +112,7 @@ var dependencyListsController = nowNextLaterModule.controller('DependencyListsCo
       allTaskData.later.tasks = uuidsToTasks(depGrid.later());
       allTaskData.laterStill.tasks = uuidsToTasks(depGrid.laterStill());
 
-      console.log(JSON.stringify(allTaskData));
+      ////console.log(JSON.stringify(allTaskData));
 
 
       $timeout(function() {
@@ -123,10 +123,22 @@ var dependencyListsController = nowNextLaterModule.controller('DependencyListsCo
 
     downloadTasks();
 
+    var depLinks = function(uuids) {
+      var deps = [];
+      for (var i=0; i<uuids.length; i++) {
+        var t = taskHash[uuids[i]];
+        deps.push({uuid: t.uuid, title: t.title});
+      }
+      return deps;
+    }
+
     var uuidsToTasks = function(uuids) {
       var tasks = [];
       for (var i=0; i<uuids.length; i++) {
-        tasks.push(taskHash[uuids[i]]);
+        var task = taskHash[uuids[i]];
+        task.blockedBy = depLinks(taskGraph.successors(uuids[i]));
+        task.blocks = depLinks(taskGraph.predecessors(uuids[i]));
+        tasks.push(task);
       }
       return tasks;
       // console.log("!! " + uuids);

@@ -89,6 +89,7 @@ border-bottom-radius(n)
 
     h2.column-heading
       margin 0
+      margin-bottom 20px
       padding 8px 4px
       background-color $column-heading-background-color
       color #CCC
@@ -106,25 +107,28 @@ border-bottom-radius(n)
       .task-footer
         display none
     .task
-      margin 5px
+      margin 5px 15px 15px 15px
       background $task-background-color
-      border 2px solid $task-border-color
-      border-top-radius 5px
-      border-bottom-radius 5px
-      margin-bottom 5px
+      //border 2px solid $task-border-color
+      //border-top-radius 5px
+      //border-bottom-radius 5px
+      //margin-bottom 5px
       .title
         font-weight bold
-        border-top-radius 3px
+        //border-top-radius 3px
         padding 4px
         background darken($task-background-color, 7%)
-        border-bottom 1px solid $task-border-color
+        //border-bottom 1px solid $task-border-color
+        border-bottom 1px solid darken($task-background-color, 15%)
         cursor pointer
       .summary
         padding 4px
         font-size small
+        color lighten(black, 50%)
       .full-text
-        padding 2px
-        border 1px white dashed
+        padding 2px 10px
+        text-align:  justify
+        //border 1px white dashed
 
       .projects
         padding 10px
@@ -144,10 +148,8 @@ border-bottom-radius(n)
         span.dep
           display inline-block
           margin 2px
-          padding 2px 8px 4px 6px
-          border-top-radius 4px
-          border-bottom-radius 4px
-          font-size small
+          padding 0 2px 1px 3px
+          font-size 8pt
           font-weight bold
 
         .blocked-by:before
@@ -158,6 +160,7 @@ border-bottom-radius(n)
         .blocked-by
           span.dep
             background blue
+            border 1px solid darken(blue, 10%)
             color white
         .blocks:before
           font-style italic
@@ -167,17 +170,57 @@ border-bottom-radius(n)
         .blocks
           span.dep
             background red
+            border 1px solid darken(red, 10%)
             color white
+
+
+      // .dependencies
+      //   padding 10px
+      //   span.dep
+      //     display inline-block
+      //     margin 2px
+      //     padding 2px 8px 4px 6px
+      //     border-top-radius 4px
+      //     border-bottom-radius 4px
+      //     font-size small
+      //     font-weight bold
+      //
+      //   .blocked-by:before
+      //     font-style italic
+      //     color lighten($task-text-color, 50%)
+      //     content "Blocked by: "
+      //     margin-left: -5px
+      //   .blocked-by
+      //     span.dep
+      //       background blue
+      //       color white
+      //   .blocks:before
+      //     font-style italic
+      //     color lighten($task-text-color, 50%)
+      //     content "Blocks: "
+      //     margin-left -5px
+      //   .blocks
+      //     span.dep
+      //       background red
+      //       color white
+
+
+
     .created
       font-size smaller
       color #AAA
       padding 2px 6px
       text-align right
+      background darken($task-background-color, 4%)
   .tasks-now
     h2.column-heading
       background-color $now-bg
       color white // black // complement($now-bg)
 
+    .blockedBy
+      display none
+    .blocked-by:before
+      display none
 
   .tasks-next
     h2.column-heading
