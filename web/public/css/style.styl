@@ -106,6 +106,8 @@ border-bottom-radius(n)
         display none
       .task-footer
         display none
+      border-bottom 4px solid darken($task-background-color, 4%)
+
     .task
       margin 5px 15px 15px 15px
       background $task-background-color
@@ -362,25 +364,30 @@ $drop-hover-bg = #fcfbf2
 .drag-handle {
   width: 250px;
   font-weight bold
-  border-top-radius 3px
-  border-bottom-radius 3px
-  padding 4px
-  border 2px solid black;
+  //border-top-radius 3px
+  //border-bottom-radius 3px
+  padding 2px 4px
+  //border 2px solid black;
   background darken($task-background-color, 7%)
+  border 1px solid darken($task-background-color, 21%);
 }
 
 .being-dragged {
   opacity: 0.4;
 }
 
+.ui-state-default {
+  border none
+}
+
 .ui-state-default .title {
   background darken($drop-hover-bg, 7%) !important;
 }
 .ui-state-hover {
-  border-color red !important;
+  //border-color red !important;
   background-color: $drop-hover-bg!important;
 }
 .ui-state-highlight {
   background darken($drop-hover-bg, 7%) !important;
-  background-color: $drop-hover-bg!important;
+  //background-color: $drop-hover-bg!important;
 }
