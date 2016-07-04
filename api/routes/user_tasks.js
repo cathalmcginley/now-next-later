@@ -121,7 +121,7 @@ router.route('/:task_uuid/')
   });
 
 router.route('/:task_uuid/dependencies/')
-    .post(function(req, res) {  //  POST  :  createTask
+    .post(function(req, res) {  //  POST  :  addDependency (otherUuid)
       var userId = req.params.user_id;
       var taskUuid = req.params.task_uuid;
 
@@ -142,6 +142,34 @@ router.route('/:task_uuid/dependencies/')
 
     });
 
+    router.route('/:task_uuid/dependencies/:other_task_uuid/')
+        .get(function(req, res) {  //  GET  :  listDependency (otherUuid)
+          var userId = req.params.user_id;
+          var taskUuid = req.params.task_uuid;
+          var otherTaskUuid = req.params.other_task_uuid;
 
+          //   tasks.addDependency(userId, taskUuid, depUserId, depTaskUuid, function(dep, err) {
+          //     var depUri = path.join(req.originalUrl, "/" + depTaskUuid);
+          //     console.log(depUri);
+          //     res.status(201).location(depUri).json(dep);
+          //   });
+          // } else {
+          //   res.sendStatus(400);
+          // }
+
+          res.sendStatus(401);  // TODO logic here
+
+        })
+        .delete(function(req, res) {  //  DELETE  :  removeDependency (otherUuid)
+          var userId = req.params.user_id;
+          var taskUuid = req.params.task_uuid;
+          var otherTaskUuid = req.params.other_task_uuid;
+          tasks.deleteDependency(userId, taskUuid, otherTaskUuid, function(msg, err) {
+            console.log("DELETE " + msg);
+            res.sendStatus(200);
+          });
+
+
+        });
 
 module.exports = router;

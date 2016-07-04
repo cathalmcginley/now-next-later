@@ -161,6 +161,7 @@ var createTaskCypher = qtemplate("MATCH (u:User {userId: {{ q.userId }}})",
 var createTask = function(userId, taskData, callback) {
   var newUuid = uuid.v4();
   var now = new Date();
+  //var userIdX = 43;
   var q = {userId: userId, taskUuid: newUuid, title: taskData.title,
     summary:taskData.summary, fullText: taskData.fullText,
     created: now.getTime()};
@@ -169,6 +170,7 @@ var createTask = function(userId, taskData, callback) {
   var task = new Task(q.taskUuid, q.title, q.summary, q.fullText, now);
   var session  = graphdb.session();
   session.run(createTaskCypher(q)).then(function(rslt) {
+    console.log(rslt);
     // TODO check for errors
     callback(task, null);
     session.close();
@@ -181,7 +183,7 @@ var createDependencyCypher = qtemplate("MATCH (u1:User {userId: {{q.u1}}})",
 "-[:OWNS]-> (t1:Task {uuid:'{{q.t1}}'}),",
 " (u2:User {userId: {{q.u2}}}) ",
 "-[:OWNS]-> (t2:Task {uuid:'{{q.t2}}'})",
-" MERGE (t1) -[:DEPENDS_ON]-> (t2)");
+" MERGE (t1) -[:DEPENDS_ON {depUuid: '{{q.t2}}'}]-> (t2)");
 
 var addDependency = function(userId, taskUuid, depUserId, depTaskUuid, callback) {
   // NOTE: prohibit self-links
@@ -201,6 +203,21 @@ var addDependency = function(userId, taskUuid, depUserId, depTaskUuid, callback)
   session.run(createDependencyCypher(q)).then(function(rslt) {
     callback(dep, null);
     session.close();
+  });
+}
+
+var deleteDependencyCypher = qtemplate("MATCH (u1:User {userId: {{q.u1}}})",
+"-[:OWNS]-> (t1:Task {uuid:'{{q.t1}}'})",
+"-[dep:DEPENDS_ON {depUuid: '{{q.depUuid}}'}]->",
+"(t2:Task)",
+"DELETE dep");
+
+var deleteDependency = function(userId, taskUuid, depUuid, callback) {
+  var q = {u1:userId, t1:taskUuid, depUuid: depUuid};
+  var session = graphdb.session();
+  console.log(deleteDependencyCypher(q));
+  session.run(deleteDependencyCypher(q)).then(function(rslt) {
+    callback("totally...", null);
   });
 }
 
@@ -240,5 +257,6 @@ module.exports = {
   getAllTasks: getAllTasks,
   createTask: createTask,
   updateTask: updateTask,
-  addDependency: addDependency
+  addDependency: addDependency,
+  deleteDependency: deleteDependency
 }
