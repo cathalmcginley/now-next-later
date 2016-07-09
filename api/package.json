@@ -20,10 +20,15 @@
   },
   "license": "AGPL-3.0",
   "devDependencies": {
+    "chai": "^3.5.0",
     "del": "^2.2.1",
     "gulp": "^3.9.1",
     "gulp-livereload": "^3.8.1",
     "gulp-nodemon": "^2.1.0",
-    "gulp-plumber": "^1.1.0"
+    "gulp-plumber": "^1.1.0",
+    "mocha": "^2.5.3"
+  },
+  "scripts": {
+    "test": "mocha --recursive"
   }
 }
