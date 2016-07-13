@@ -120,10 +120,14 @@ border-bottom-radius(n)
         font-weight bold
         //border-top-radius 3px
         padding 4px
-        background darken($task-background-color, 7%)
+        background-color darken($task-background-color, 7%)
         //border-bottom 1px solid $task-border-color
         border-bottom 1px solid darken($task-background-color, 15%)
         cursor pointer
+      .title:hover
+        background-image url('grip.png')
+        background-repeat no-repeat
+        background-position top right
       .summary
         padding 4px
         font-size small
@@ -370,11 +374,14 @@ $drop-hover-bg = #fcfbf2
   padding 2px 4px
   //border 2px solid black;
   background darken($task-background-color, 7%)
+  background-image url('grip.png')
+  background-repeat no-repeat
+  background-position top right
   border 1px solid darken($task-background-color, 21%);
 }
 
 .being-dragged {
-  opacity: 0.4;
+  opacity: 0.25;
 }
 
 .ui-state-default {

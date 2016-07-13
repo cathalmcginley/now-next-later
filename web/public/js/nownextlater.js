@@ -286,9 +286,11 @@ var dependencyListsController = nowNextLaterModule.controller('DependencyListsCo
       // TODO fix to prevent cyclic dependencies in UI
 
       var draggableOptions = { //containment: "#tasks-now-column",
-       revert:'invalid',
+       revert: 'invalid', // drag handle reverts unless there was a true drop
+       delay: 250, // prevent title clicks becoming inadvertent drags
        handle: 'div.title',
-        opacity: 0.9,
+       opacity: 0.8, // drag-handle opacity
+	  zIndex: 10,
         helper: dragHandle,
        start: function() {
          $( this ).addClass("being-dragged");
