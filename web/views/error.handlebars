@@ -1,5 +1,5 @@
-
-  {{ message }}
-  {{ error.status }}
-  {{ error.stack }}  
+<div class="error error-{{error.status}}">
+	<h1 class="error"><span class="status-code">{{error.status}}:</span> {{ message }}</h1>
+  <pre class="stack-trace">{{ error.stack }}</pre>
+</div>
 
