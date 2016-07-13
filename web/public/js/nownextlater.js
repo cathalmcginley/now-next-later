@@ -19,6 +19,8 @@
  * Street, Fifth Floor, Boston, MA 02110-1301 USA.
 */
 
+var ReallyExecuteOperations = true;
+
 var nowNextLaterModule = angular.module('NowNextLater', []);
 
 /*
@@ -82,7 +84,6 @@ var dependencyListsController = nowNextLaterModule.controller('DependencyListsCo
       var getPromise = $http.get("/users/73489/tasks/")
       console.log(taskGraph.nodes());
       getPromise.success(function(data, status, headers, config) {
-        console.log("got task data " + status);
         var tasks = data.tasks;
         var deps = data.graph;
         for (var i=0; i<tasks.length; i++) {
@@ -91,8 +92,6 @@ var dependencyListsController = nowNextLaterModule.controller('DependencyListsCo
           taskHash[taskData.uuid] = taskSum;
           taskGraph.setNode(taskData.uuid);
         }
-        console.log("nodes " + taskGraph.nodes());
-        console.log("sinks " + taskGraph.sinks());
         for (var j=0; j<deps.length; j++) {
           var dep = deps[j];
           taskGraph.setEdge(dep[0], dep[1]);
@@ -104,16 +103,10 @@ var dependencyListsController = nowNextLaterModule.controller('DependencyListsCo
     var updateDepGridFromGraph = function() {
       // re-create the dependency grid
       depGrid = new DependencyGrid(taskGraph);
-      //console.log(taskGraph);
-      console.log(JSON.stringify(graphlib.json.write(taskGraph)));
-      console.log("-------------taskGraph");
       allTaskData.now.tasks = uuidsToTasks(depGrid.now());
       allTaskData.next.tasks = uuidsToTasks(depGrid.next());
       allTaskData.later.tasks = uuidsToTasks(depGrid.later());
       allTaskData.laterStill.tasks = uuidsToTasks(depGrid.laterStill());
-
-      ////console.log(JSON.stringify(allTaskData));
-
 
       $timeout(function() {
         dndEnableAll(taskGraph.nodes());
@@ -149,8 +142,8 @@ var dependencyListsController = nowNextLaterModule.controller('DependencyListsCo
     }
 
     var updateTaskData = function() {
-      console.log(depGrid.now());
-      console.log(uuidsToTasks(depGrid.now()));
+      //console.log(depGrid.now());
+      //console.log(uuidsToTasks(depGrid.now()));
       allTaskData.now.tasks = uuidsToTasks(depGrid.now());
     }
 
@@ -176,24 +169,24 @@ var dependencyListsController = nowNextLaterModule.controller('DependencyListsCo
     $scope.newTask = newEmptyTask();
 
     var showAddNewTaskDialog = function() {
-      console.log("Show 'Add New Task' Dialog");
+      //console.log("Show 'Add New Task' Dialog");
       $scope.page.modalVisible = true;
     };
     var cancelAddNewTaskDialog = function() {
-      console.log("Cancel 'Add New Task' Dialog");
+      //console.log("Cancel 'Add New Task' Dialog");
       $scope.page.modalVisible = false;
     }
 
     var addTaskToDisplay = function(taskData) {
-      console.log(taskData);
+      //console.log(taskData);
 
 
       var newUuid = taskData.uuid;
       var nts = new TaskSummary(taskData);
-      console.log(nts);
+      //console.log(nts);
       taskHash[newUuid] = nts;
-      console.log(newUuid);
-      console.log(taskHash);
+      //console.log(newUuid);
+      //console.log(taskHash);
       taskGraph.setNode(newUuid);
       depGrid.insertNewTask(newUuid);
       updateTaskData();
@@ -206,14 +199,15 @@ var dependencyListsController = nowNextLaterModule.controller('DependencyListsCo
 
        //});
 
-      console.log("--------");
-      console.log(allTaskData.now);
-      console.log(allTaskData.next);
+      //console.log("--------");
+      //console.log(allTaskData.now);
+      //console.log(allTaskData.next);
     }
 
 
     // create link  (b) -[:DEPENDS_ON]-> (a)
     var addRealDependency = function(b, a) {
+    	if (ReallyExecuteOperations) {
       var bPath = userPath + b;
       var aDepPath = userPath + a + "/dependencies/";
       var pathData = JSON.stringify({path: bPath})
@@ -221,7 +215,7 @@ var dependencyListsController = nowNextLaterModule.controller('DependencyListsCo
       //var postPromise = $http.get(bPath); // HACK
 
       postPromise.success(function(na, status, headers, config) {
-        console.log("posted : " + status);
+        //console.log("posted : " + status);
         // TODO rejigger whole graph
         //fadeIt(a);
         taskGraph.setEdge(a, b);
@@ -230,18 +224,21 @@ var dependencyListsController = nowNextLaterModule.controller('DependencyListsCo
         //}, 1000);
         //$timeout(function() { downloadTasks(); }, 100);
       });
+    	} else {
+    		console.log("FAKE addRealDependency(" + a + ", " + b + ")");
+    	}
     }
 
     ////addTaskToDisplay({"uuid":"504c5a37-04f5-4e9d-b849-3bae011224be","title":"5w34","summary":"","fullText":"","timeCreated":"2016-07-01T10:07:51.279Z","completed":false,"timeCompleted":null});
 
     var addNewTask= function() {
-      console.log("Add New Task: " + $scope.newTask.title);
+      //console.log("Add New Task: " + $scope.newTask.title);
       // TODO upload data here!
 
       var taskData = JSON.stringify($scope.newTask);
       var postPromise = $http.post("/users/73489/tasks/", taskData);
       postPromise.success(function (taskData, status, headers, config) {
-        console.log("posted : " + status);
+        //console.log("posted : " + status);
         addTaskToDisplay(taskData);
       });
 
@@ -251,14 +248,14 @@ var dependencyListsController = nowNextLaterModule.controller('DependencyListsCo
     }
 
     var markAsDone = function(task) {
-      console.log("onMarkedDone // id :: " + task.id);
+      //console.log("onMarkedDone // id :: " + task.id);
       var task = taskHash[task.id];
       //task.markDone();
       var taskJson = task.getData();
       var taskData = JSON.stringify(taskJson);
       var taskUri = userPath + task.id;
-      console.log(taskData);
-      console.log(taskUri);
+      //console.log(taskData);
+      //console.log(taskUri);
       var putPromise = $http.put(taskUri, taskData);
       ////var putPromise = $http.get(taskUri);
       putPromise.success(function (data, status, headers, config) {
@@ -270,12 +267,58 @@ var dependencyListsController = nowNextLaterModule.controller('DependencyListsCo
       });
 
     }
+    
+    
 
+    var filterDropTargets = function(taskId, dragIsStarting) {
+    	var enableDisableDroppable = function(_id) {
+    		var taskDiv = $("#" + _id);
+    		$("#" + _id).droppable("option", "disabled", dragIsStarting);
+    		x = "E";
+    		if (dragIsStarting) {
+    			x = "D";    	
+    			taskDiv.addClass("exclude-droppable");
+    		} else {
+    			taskDiv.removeClass("exclude-droppable");
+    		}
+    		
+    		console.log(x + " [[ " + $("#" + _id).droppable("option", "disabled") + " ]]");
+    	}
+    	
+    	
 
+    	var thisTaskBlocks = [];
+    	var working = taskGraph.predecessors(taskId);
+    	
+    	console.log(working);    	
+    	if (working.length > 0) {
+    	  for (var i=0; i<working.length; i++) {    		
+    		console.log("A " + working.length);
+    		var current = working[i];
+    		console.log("B " + current);    		
+    		console.log("C " + working);
+    		console.log("---\n\n");
+    		thisTaskBlocks.push(current);
+    		var more = taskGraph.predecessors(current);
+    		_.each(more, function(m) { working.push(m); });
+    	  }
+    	} else {
+    	  console.log("no predecessors for " + taskId);  
+    	}	
+    	
+    	_.each(thisTaskBlocks, function(blockedId) {
+    		enableDisableDroppable(blockedId);
+    	});
+    	
+    	var thisTaskIsImmediatelyBlockedBy = taskGraph.outEdges(taskId);
+    	_.each(thisTaskIsImmediatelyBlockedBy, function(edge) {
+    		enableDisableDroppable(edge.w);
+    	});
+    } 
 
+    //var filterDropTargetsDragStart = filterDropTargets(undefined, false);
 
     // HERE?
-
     var DragAndDrop = function() {
 
       var dragHandle = function(event) {
@@ -287,16 +330,24 @@ var dependencyListsController = nowNextLaterModule.controller('DependencyListsCo
 
       var draggableOptions = { //containment: "#tasks-now-column",
        revert: 'invalid', // drag handle reverts unless there was a true drop
-       delay: 250, // prevent title clicks becoming inadvertent drags
+       delay: 150, // prevent title clicks becoming inadvertent drags
        handle: 'div.title',
        opacity: 0.8, // drag-handle opacity
 	  zIndex: 10,
         helper: dragHandle,
-       start: function() {
+        
+       start: function(event, ui) {
          $( this ).addClass("being-dragged");
+         var thisId = $(event.target).parent(".task").context.id;
+         console.log(thisId);
+         
+         filterDropTargets(thisId, true);
        },
-       stop: function() {
+       stop: function(event, ui) {
            $( this ).removeClass("being-dragged");
+           var thisId = $(event.target).parent(".task").context.id;
+           console.log(thisId);
+           filterDropTargets(thisId, false);
         }
      };
 
@@ -305,17 +356,33 @@ var dependencyListsController = nowNextLaterModule.controller('DependencyListsCo
        activeClass: "ui-state-default", // lights up possible targets
        hoverClass: "ui-state-hover",    // lights up when about to be droppped on
        drop: function( event, ui ) {
-         $( this )
-           .addClass( "ui-state-highlight" );
-           // TODO add red Blocker tag to bottom of div
-           // TODO open up div if not already open
-           //.find( "div.summary" )
-           //   .html( "Dropped!" );
-         var dragId = ui.draggable.attr('id');
+    	 var dragId = ui.draggable.attr('id');
          var dropId = $( this ).attr('id');
+       
+    	 var justDroppedOn = $(this);
+    	  
+         
+    	 justDroppedOn.addClass( "just-dropped-on" );
+    	 $timeout(function() {
+    		 justDroppedOn.animate({ 'background-color': '#F5F5F5'}, 2500);
+    	   justDroppedOn.removeClass("just-dropped-on"); //, 1000, "swing", function() {console.log("cb jdo");})
+    	 }, 1000);
+         
+    	 $timeout(function() {
+    	 var justDragged = $("#"+dragId)
+    	 justDragged.addClass("just-dragged");
+    	 $timeout(function() {
+      	   
+      	 justDragged.animate({ 'background-color': '#F5F5F5'}, 2500);
+      	 justDragged.removeClass("just-dragged");
+      	   //, 3000, "swing", function() {console.log("cb jd");})
+      	 }, 1000);
+    	 }, 150); // the dragged target may be re-drawn elsewhere, give AngularJS time to re-render
+
+         
          console.log(dragId + " dropped onto " + dropId);
+         //console.log("NOT REALLY ADDING DEPENDENCY");
          addRealDependency(dropId, dragId);
-         // TODO TODO NOW NOW - POST to 84902aef-849../dependencies/
        }}
 
         return {
@@ -409,37 +476,6 @@ var taskSummaryController = function($http) {
   }
 };
 
-//var onTitleClick = function() {
-//    console.log("onTitleClick2");
-//  }
-
-// var newTaskDialogController = function() {
-//   var cancelModalDialog = function() {
-//     console.log("dbedfs");
-//     $scope.page.modalVisible = false;
-//   }
-//   this.cancelModalDialog = cancelModalDialog;
-// };
-
-// nowNextLaterModule.component('taskDialog', {
-//   templateUrl: "templates/new-task-dialog.html",
-//     controller : ['$attrs', '$scope', function($attrs, $scope) {
-//       this.cancelModalDialog = function() {
-//         $scope.$parent.cancelModalDialog();
-//       };
-//     }],
-//   bindings: {
-//     cancelModalDialog: '&'
-//   }
-// });
-
-/*template: '<div class="task" id="$ctrl.task.id" ng-class="{\'compact\': $ctrl.task.isCompact}">' +
-'<div class="title" ng-click="$ctrl.onTitleClick($ctrl.task)">{{ $ctrl.task.title }}</div>' +
-'<div class="summary">{{ $ctrl.task.summary }}</div>' +
-'<div class="full-text">' +
-  '<p>{{ $ctrl.task.fullText }}</p>' +
-'</div>' +
-'</div>',*/
 
 nowNextLaterModule.component('taskSummary', {
   templateUrl: "templates/task-summary.html",

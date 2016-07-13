@@ -12,6 +12,11 @@ $task-border-color = #3e3e3e
 $task-background-color = #F5F5F5
 $task-text-color = black
 
+$blocked-by-bg = #f0f0ff
+$blocks-bg = #fff0f0
+
+// $blocked-by-bg = blue
+// $blocks-bg = red
 
 body
   font 14px "Lucida Grande", Helvetica, Arial, sans-serif
@@ -21,7 +26,7 @@ body
   background-position top left
   background-attachment scroll
   background-repeat no-repeat
-  //padding-top: 150px
+  //padding-top 150px
 
 a
   color #00B7FF
@@ -67,7 +72,7 @@ border-bottom-radius(n)
     border-width 0
     border-bottom 3px solid darken($now-bg, 20%)
   button.add-task:before
-    content: "+"
+    content "+"
     font-size 1.5em
     font-weight bold
     padding 2px 10px 4px 10px
@@ -134,7 +139,7 @@ border-bottom-radius(n)
         color lighten(black, 50%)
       .full-text
         padding 2px 10px
-        text-align:  justify
+        text-align  justify
         //border 1px white dashed
 
       .projects
@@ -162,8 +167,8 @@ border-bottom-radius(n)
         .blocked-by:before
           font-style italic
           color lighten($task-text-color, 50%)
-          content "Blocked by: "
-          margin-left: -5px
+          content "Blocked by "
+          margin-left -5px
         .blocked-by
           span.dep
             background blue
@@ -172,45 +177,13 @@ border-bottom-radius(n)
         .blocks:before
           font-style italic
           color lighten($task-text-color, 50%)
-          content "Blocks: "
+          content "Blocks "
           margin-left -5px
         .blocks
           span.dep
             background red
             border 1px solid darken(red, 10%)
             color white
-
-
-      // .dependencies
-      //   padding 10px
-      //   span.dep
-      //     display inline-block
-      //     margin 2px
-      //     padding 2px 8px 4px 6px
-      //     border-top-radius 4px
-      //     border-bottom-radius 4px
-      //     font-size small
-      //     font-weight bold
-      //
-      //   .blocked-by:before
-      //     font-style italic
-      //     color lighten($task-text-color, 50%)
-      //     content "Blocked by: "
-      //     margin-left: -5px
-      //   .blocked-by
-      //     span.dep
-      //       background blue
-      //       color white
-      //   .blocks:before
-      //     font-style italic
-      //     color lighten($task-text-color, 50%)
-      //     content "Blocks: "
-      //     margin-left -5px
-      //   .blocks
-      //     span.dep
-      //       background red
-      //       color white
-
 
 
     .created
@@ -222,31 +195,31 @@ border-bottom-radius(n)
   .tasks-now
     h2.column-heading
       background-color $now-bg
-      color white // black // complement($now-bg)
+      color white
 
     .blockedBy
       display none
-    .blocked-by:before
+    .blocked-bybefore
       display none
 
   .tasks-next
     h2.column-heading
       background-color $next-bg
-      color white // complement($next-bg)
+      color white
     .mark-as-done
       display none
 
   .tasks-later
     h2.column-heading
       background-color $later-bg
-      color white // complement($later-bg)
+      color white
     .mark-as-done
       display none
 
   .tasks-later-still
     h2.column-heading
       background-color $later-still-bg
-      color white // complement($later-bg)
+      color white
     .mark-as-done
       display none
 
@@ -264,7 +237,7 @@ border-bottom-radius(n)
 #aButton
  background-color rgb(255, 253, 198)
  border 1px solid grey
- width: 100px
+ width 100px
 
 /*   * * *   modal dialog boxes   * * *   */
 
@@ -324,8 +297,8 @@ $form-input-width = 250px //$dialog-width - $label-width - (2 * 20px) -10px
           border-style solid
           border-width 0
           border-bottom 3px solid darken($now-bg, 20%)
-        button:before
-          content: "+"
+        buttonbefore
+          content "+"
           font-weight bold
           padding 2px 6px 2px 6px
           background-color darken($now-bg, 10%)
@@ -334,12 +307,12 @@ $form-input-width = 250px //$dialog-width - $label-width - (2 * 20px) -10px
 
     .dialog-header
       display relative
-      clear: both
+      clear both
       h2
         margin 0
         padding 4px 8px
       .close-dialog
-        position:absolute
+        positionabsolute
         top 0
         right 0
         font-size 28px
@@ -366,44 +339,54 @@ $form-input-width = 250px //$dialog-width - $label-width - (2 * 20px) -10px
 
 $drop-hover-bg = #fcfbf2
 
-.drag-handle {
-  width: 250px;
+.drag-handle
+  width 250px
   font-weight bold
   //border-top-radius 3px
   //border-bottom-radius 3px
   padding 2px 4px
-  //border 2px solid black;
+  //border 2px solid black
   background darken($task-background-color, 7%)
   background-image url('grip.png')
   background-repeat no-repeat
   background-position top right
-  border 1px solid darken($task-background-color, 21%);
-}
+  border 1px solid darken($task-background-color, 21%)
 
-.being-dragged {
-  opacity: 0.25;
-}
 
-.ui-state-default {
+.being-dragged
+  opacity 0.25
+
+
+.exclude-droppable
+  opacity 0.5
+
+
+.ui-state-default
   border none
-}
 
-.ui-state-default .title {
-  background darken($drop-hover-bg, 7%) !important;
-}
-.ui-state-hover {
-  //border-color red !important;
-  background-color: $drop-hover-bg!important;
-}
-.ui-state-highlight {
-  background darken($drop-hover-bg, 7%) !important;
-  //background-color: $drop-hover-bg!important;
-}
+
+.ui-state-default .title
+  background-color darken($drop-hover-bg, 7%) !important
+
+.ui-state-hover
+  background-color $drop-hover-bg !important
+
+
+.just-dropped-on
+  background-color $blocked-by-bg !important
+  //transition background-color 1500ms ease;
+
+
+
+.just-dragged
+  background $blocks-bg !important
+  //transition background-color 1500ms ease;
+
 
 /* error pages */
 
 div.error
-  margin-left: 120px
+  margin-left 120px
 
   h1
     .status-code
