@@ -6,3 +6,5 @@ web/public/css/style.css
 .sass-cache*~
 api/node_modules
 web/.got.bower.bootstrap
+.project
+.settings/

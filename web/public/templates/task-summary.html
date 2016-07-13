@@ -1,24 +1,27 @@
-<div class="task" id="{{$ctrl.task.id}}" ng-class="{'compact': $ctrl.task.isCompact}">
-<div class="title" ng-click="$ctrl.onTitleClick($ctrl.task)">{{ $ctrl.task.title }}</div>
-<div class="summary">{{ $ctrl.task.summary }}</div>
-<div class="full-text">
-  <p>{{ $ctrl.task.fullText }}</p>
-</div>
-<div class="task-footer">
-  <div class="mark-as-done">
-    <button ng-click="$ctrl.onMarkedDone($ctrl.task)">&#9634; Done</button>
-  </div>
-  <div class="projects">...</div>
-  <div class="dependencies">
-    <div class="blocked-by">
-      <span class="dep" ng-repeat="dep in $ctrl.task.blockedBy">{{ dep.title}}</span>
-    </div>
-    <div class="blocks">
-      <span class="dep" ng-repeat="dep in $ctrl.task.blocks">{{ dep.title}}</span>
-    </div>
-  </div>
-  <div class="created">
-    {{ $ctrl.task.created }}
-  </div>
-</div>
+<div class="task" id="{{$ctrl.task.id}}"
+	ng-class="{'compact': $ctrl.task.isCompact}">
+	<div class="title" ng-click="$ctrl.onTitleClick($ctrl.task)">{{
+		$ctrl.task.title }}</div>
+	<div class="summary">{{ $ctrl.task.summary }}</div>
+	<div class="full-text">
+		<p>{{ $ctrl.task.fullText }}</p>
+	</div>
+	<div class="task-footer">
+		<div class="mark-as-done">
+			<button ng-click="$ctrl.onMarkedDone($ctrl.task)">&#9634;
+				Done</button>
+		</div>
+		<div class="projects">...</div>
+		<div class="dependencies">
+			<div class="blocked-by">
+				<span class="dep" ng-repeat="dep in $ctrl.task.blockedBy">{{
+					dep.title}}</span>
+			</div>
+			<div class="blocks">
+				<span class="dep" ng-repeat="dep in $ctrl.task.blocks">{{
+					dep.title}}</span>
+			</div>
+		</div>
+		<div class="created">{{ $ctrl.task.created }}</div>
+	</div>
 </div>
