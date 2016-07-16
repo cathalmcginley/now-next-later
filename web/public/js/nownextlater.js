@@ -440,13 +440,7 @@ var dependencyListsController = nowNextLaterModule.controller('DependencyListsCo
 
     var fadeIt = function(taskUuid) {
       console.log("fadeIt " + taskUuid);
-//      console.log($('#' + taskUuid).fadeOut(800, function() {
-//        // remove DONE task
-//        delete taskHash[taskUuid];
-//        taskGraph.removeNode(taskUuid);
-//        updateDepGridFromGraph();
-//      }));
-//      
+
       var taskDiv = $('#' + taskUuid);
       taskDiv.animate({opacity: 0, height: 0, "margin-top": 0, "margin-bottom": 0}, 1250, "swing", function() {
     	  taskDiv.css({display: "none"});

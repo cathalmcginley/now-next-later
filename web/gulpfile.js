@@ -53,7 +53,7 @@ gulp.task('develop', function () {
   livereload.listen({port:35730});
   nodemon({
     script: 'bin/www',
-    ext: 'js handlebars coffee',
+    ext: 'js handlebars hbs coffee',
     stdout: false
   }).on('readable', function () {
     this.stdout.on('data', function (chunk) {
