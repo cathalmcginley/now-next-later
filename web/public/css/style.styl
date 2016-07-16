@@ -15,6 +15,8 @@ $task-text-color = black
 $blocked-by-bg = #f0f0ff
 $blocks-bg = #fff0f0
 
+$new-project-bg = $next-bg
+
 // $blocked-by-bg = blue
 // $blocks-bg = red
 
@@ -62,23 +64,36 @@ border-bottom-radius(n)
 
   margin-bottom 5px
 
-  button.add-task
+  button
     padding 2px 8px 4px 0
     font-size 1.5em
-    color white
     font-weight bold
-    background-color $now-bg
     border-style solid
     border-width 0
-    border-bottom 3px solid darken($now-bg, 20%)
-  button.add-task:before
+  button:before
     content "+"
     font-size 1.5em
     font-weight bold
     padding 2px 10px 4px 10px
+    margin-right 8px
+
+  button.add-task
+    color white
+    background-color $now-bg
+    border-bottom 3px solid darken($now-bg, 20%)
+  button.add-task:before
     background-color darken($now-bg, 10%)
     border-right 1px solid mix($now-bg, #DDD)
-    margin-right 8px
+
+
+
+  button.add-project
+    color white
+    background-color $new-project-bg
+    border-bottom 3px solid darken($new-project-bg, 20%)
+  button.add-project:before
+    background-color darken($new-project-bg, 10%)
+    border-right 1px solid mix($new-project-bg, #DDD)
 
 
 /*   * * *   the now/next/later grid   * * *   */
@@ -199,7 +214,7 @@ border-bottom-radius(n)
 
     .blockedBy
       display none
-    .blocked-bybefore
+    .blocked-by:before
       display none
 
   .tasks-next
@@ -244,6 +259,9 @@ border-bottom-radius(n)
 .visible-modal
   display block !important
 
+.visible-dialog
+  display block !important
+
 .modal-dialog-bg
   display none
   position fixed
@@ -263,12 +281,10 @@ $form-input-width = 250px //$dialog-width - $label-width - (2 * 20px) -10px
   .modal-dialog-box
     background-color white
     position absolute
-    margin-left 100px
-    margin-top 100px
     padding 0
     border 1px solid #888
     width $dialog-width
-    height 600px
+
 
     form
       margin 20px
@@ -281,7 +297,6 @@ $form-input-width = 250px //$dialog-width - $label-width - (2 * 20px) -10px
         width $label-width
         text-align right
         float left
-        color darken($now-bg, 50%)
       input,
       textarea
         width $form-input-width
@@ -291,18 +306,15 @@ $form-input-width = 250px //$dialog-width - $label-width - (2 * 20px) -10px
         button
           float right
           padding 2px 6px 2px 0
-          color white
           font-weight bold
-          background-color $now-bg
           border-style solid
           border-width 0
-          border-bottom 3px solid darken($now-bg, 20%)
-        buttonbefore
+          border-bottom-width 3px
+          border-bottom-style solid
+        button:before
           content "+"
           font-weight bold
           padding 2px 6px 2px 6px
-          background-color darken($now-bg, 10%)
-          border-right 1px solid mix($now-bg, #DDD)
           margin-right 8px
 
     .dialog-header
@@ -312,24 +324,64 @@ $form-input-width = 250px //$dialog-width - $label-width - (2 * 20px) -10px
         margin 0
         padding 4px 8px
       .close-dialog
-        positionabsolute
+        position: absolute
         top 0
         right 0
         font-size 28px
         font-weight bold
-        color white
         padding 6px
       .close-dialog:hover,
       .close-dialog:focus
-        color darken($now-bg, 10%)
         text-decoration none
         cursor pointer
 
 
   .new-task-dialog
+    display none
+    margin-left 100px
+    margin-top 100px
+    height 600px
     .dialog-header
-      background-color $now-bg
       color white
+      background-color $now-bg
+      .close-dialog:hover,
+      .close-dialog:focus
+        color darken($now-bg, 10%)
+    form
+      label
+        color darken($now-bg, 50%)
+      .submit-buttons
+        button
+          color white
+          background-color $now-bg
+          border-bottom-color darken($now-bg, 20%)
+        button:before
+          background-color darken($now-bg, 10%)
+          border-right 1px solid mix($now-bg, #DDD)
+
+  .new-project-dialog
+    display none
+    margin-left 170px
+    margin-top 120px
+    height 300px
+    .dialog-header
+      color white
+      background-color $new-project-bg
+      .close-dialog:hover,
+      .close-dialog:focus
+        color darken($new-project-bg, 30%)
+    form
+      label
+        color darken($new-project-bg, 50%)
+      .submit-buttons
+        button
+          color white
+          background-color $new-project-bg
+          border-bottom-color darken($new-project-bg, 20%)
+        button:before
+          background-color darken($new-project-bg, 10%)
+          border-right 1px solid mix($new-project-bg, #DDD)
+
 
 
 

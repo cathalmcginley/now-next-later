@@ -152,12 +152,14 @@ var dependencyListsController = nowNextLaterModule.controller('DependencyListsCo
     // aa1.blocks = [];
 
     $scope.page = {
-      modalVisible: false
+      modalVisible: false,
+      taskDialogVisible: false,
+      projectDialogVisible: false
     }
 
-    var debugModal = true; // DEV :: TODO remove this
-    debugModal = false;
-    $scope.page.modalVisible = debugModal;
+//    var debugModal = true; // DEV :: TODO remove this
+//    debugModal = false;
+//    $scope.page.modalVisible = debugModal;
 
     var newEmptyTask = function() {
       return {title: "",
@@ -165,17 +167,47 @@ var dependencyListsController = nowNextLaterModule.controller('DependencyListsCo
         fullText: ""
       };
     }
+    
+    var newEmptyProject = function() {
+    	return {name: "", description: ""};
+    }
 
     $scope.newTask = newEmptyTask();
 
     var showAddNewTaskDialog = function() {
       //console.log("Show 'Add New Task' Dialog");
+      $scope.page.taskDialogVisible = true;
       $scope.page.modalVisible = true;
+      $timeout(function() {      
+    	  $("#new-task-dialog form input.title").each(function() {
+    		  this.focus();
+    	  });
+      }, 50);
     };
     var cancelAddNewTaskDialog = function() {
       //console.log("Cancel 'Add New Task' Dialog");
       $scope.page.modalVisible = false;
+      $scope.page.taskDialogVisible = false;
     }
+    
+    var showAddNewProjectDialog = function() {
+      console.log("Show 'Add New Project' Dialog");
+      $scope.page.projectDialogVisible = true;
+      $scope.page.modalVisible = true;
+      $timeout(function() {      
+    	  $("#new-project-dialog form input.name").each(function() {
+    		  this.focus();
+    	  });
+      }, 50);
+
+    };
+    var cancelAddNewProjectDialog = function() {
+      console.log("Cancel 'Add New Project' Dialog");
+      $scope.page.projectDialogVisible = false;
+      $scope.page.modalVisible = false;
+    }
+      
+    
 
     var addTaskToDisplay = function(taskData) {
       //console.log(taskData);
@@ -245,6 +277,11 @@ var dependencyListsController = nowNextLaterModule.controller('DependencyListsCo
 
       $scope.page.modalVisible = false;
       $scope.newTask = newEmptyTask();
+      $scope.newProject = newEmptyProject();
+    }
+    
+    var addNewProject = function() {
+    	console.log("NOT IMPLEMENTED addNewProject()");
     }
 
     var markAsDone = function(task) {
@@ -456,6 +493,12 @@ var dependencyListsController = nowNextLaterModule.controller('DependencyListsCo
     $scope.taskData = allTaskData;
     $scope.showAddNewTaskDialog = showAddNewTaskDialog;
     $scope.cancelAddNewTaskDialog = cancelAddNewTaskDialog;
+    $scope.addNewTask = addNewTask;
+    
+    $scope.showAddNewProjectDialog = showAddNewProjectDialog;
+    $scope.cancelAddNewProjectDialog = cancelAddNewProjectDialog;
+    $scope.addNewProject = addNewProject;
+    
     $scope.addNewTask = addNewTask;
     $scope.markAsDone = markAsDone;
     console.log($scope);
