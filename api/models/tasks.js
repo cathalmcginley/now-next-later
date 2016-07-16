@@ -39,8 +39,6 @@ var Task = function(uuid, title, summary, fullText, timeCreated) {
   this.timeCreated = timeCreated;
   this.completed = false;
   this.timeCompleted = null;
-  this.completed = false;
-  this.timeCompleted = null;
 }
 
 var getTaskQuery = qtemplate("MATCH (u:User {userId: {{ q.userId }}})",

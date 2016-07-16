@@ -24,6 +24,7 @@ var express = require('express');
 var users = require('../models/users');
 
 var tasksRouter = require('./user_tasks');
+var projectsRouter = require('./user_projects');
 var router = express.Router();
 
 
@@ -39,6 +40,7 @@ router.get('/:user_id/', function(req, res) {
 });
 
 router.use('/:user_id/tasks/', tasksRouter);
+router.use('/:user_id/projects/', projectsRouter);
 
 
 module.exports = router;

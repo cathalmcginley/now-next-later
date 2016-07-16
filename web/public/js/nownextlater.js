@@ -276,12 +276,25 @@ var dependencyListsController = nowNextLaterModule.controller('DependencyListsCo
 
 
       $scope.page.modalVisible = false;
+      $scope.page.taskDialogVisibe = false;
       $scope.newTask = newEmptyTask();
-      $scope.newProject = newEmptyProject();
+      
     }
     
     var addNewProject = function() {
-    	console.log("NOT IMPLEMENTED addNewProject()");
+    	console.log("WORK IN PROGRESS addNewProject()");
+    	
+    	var projectData = JSON.stringify($scope.newProject);
+    	console.log(projectData);
+    	
+    	var postPromise = $http.post("/users/73489/projects/", projectData);
+    	postPromise.success(function(projectData, status, headers, config) {
+    		addProjectToProjectList(projectData);
+    	});
+    	
+    	$scope.page.modalVisible = false;
+        $scope.page.projectDialogVisibe = false;
+    	$scope.newProject = newEmptyProject();
     }
 
     var markAsDone = function(task) {
