@@ -17,57 +17,52 @@
  * License along with NowNextLater; see the file COPYING.AFFERO. If
  * not, write to the Free Software Foundation, Inc., 51 Franklin
  * Street, Fifth Floor, Boston, MA 02110-1301 USA.
-*/
+ */
 
 var LCG = require('./linear-congruential-generator');
 
+/**
+ * A Linear Congruential Generator Key is intended for user-visible assigned
+ * identity numbers, like userId or projectId.
+ * 
+ * If it uses a full-period LCG, then assigned numbers from the generated
+ * sequence will hop back and forth in the available space in an apparently
+ * random way, eventually covering every possible value, and finally returning
+ * to the initial seed value.
+ * 
+ */
 
-/** 
-A Linear Congruential Generator Key is intended for user-visible
-assigned identity numbers, like userId or projectId.
+function LinearCongruentialGeneratorKey(initialSeed, multiplier, increment,
+		modulus, initialOffset, currentSeed, fullLoopCount) {
 
-If it uses a full-period LCG, then assigned numbers from the generated
-sequence will hop back and forth in the available space in an
-apparently random way, eventually covering every possible value, and
-finally returning to the initial seed value.
+	this.initialSeed = initialSeed;
 
-*/
+	this.lcg = new LCG(currentSeed, multiplier, increment, modulus);
 
+	this.fullPeriod = modulus - 1;
 
-function LinearCongruentialGeneratorKey(initialSeed, multiplier, 
-					increment, modulus,
-					initialOffset,
-					currentSeed,
-					fullLoopCount) {
+	this.initialOffset = initialOffset;
+	this.fullLoopCount = fullLoopCount;
+	this.looped = false;
 
-    this.initialSeed = initialSeed;
-
-    this.lcg = new LCG(currentSeed, multiplier, increment, modulus);
-
-    this.fullPeriod = modulus - 1;
-
-    this.initialOffset = initialOffset;
-    this.fullLoopCount = fullLoopCount;
-    this.looped = false;
-
-    this.current = function() {
-	return this.lcg.value() + this.offset();
-    }
-
-    this.offset = function() {	
-	return this.initialOffset + (this.fullLoopCount * this.fullPeriod);
-    }
-
-    this.next = function() {
-	var next = this.lcg.next();
-	var offset = this.offset();
-	if (next === this.initialSeed) {
-	    // change the loop count for the subsequent call to next()
-	    this.fullLoopCount = this.fullLoopCount + 1;
-	    this.looped = true;
+	this.current = function() {
+		return this.lcg.value() + this.offset();
 	}
-	return next + offset;
-    }
+
+	this.offset = function() {
+		return this.initialOffset + (this.fullLoopCount * this.fullPeriod);
+	}
+
+	this.next = function() {
+		var next = this.lcg.next();
+		var offset = this.offset();
+		if (next === this.initialSeed) {
+			// change the loop count for the subsequent call to next()
+			this.fullLoopCount = this.fullLoopCount + 1;
+			this.looped = true;
+		}
+		return next + offset;
+	}
 }
 
 module.exports = LinearCongruentialGeneratorKey;

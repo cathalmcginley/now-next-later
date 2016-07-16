@@ -31,4 +31,13 @@ router.route('/').get(function(req, res) {
 	});
 });
 
+router.route('/keytest').get(function(req, res) {
+	var userId = req.params.user_id;
+	projects.getCurrentKeyAndIncrement(userId, function(currKey) {
+		res.status(200).json({key: currKey})	
+	});
+	
+	
+});
+
 module.exports = router;
