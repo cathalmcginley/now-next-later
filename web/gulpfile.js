@@ -2,6 +2,8 @@ var gulp = require('gulp'),
   nodemon = require('gulp-nodemon'),
   plumber = require('gulp-plumber'),
   livereload = require('gulp-livereload'),
+  babel = require('gulp-babel'),
+//  sourcemaps = require('gulp-sourcemaps'),
   stylus = require('gulp-stylus'),
   del = require('del');
 
@@ -21,8 +23,8 @@ gulp.task('bower', function() { 
 
 gulp.task('clean', function() {
     return del([
-	'**/*~',
-	'**/*.bak'
+        '**/*~',
+        '**/*.bak'
     ]);
 });
 
@@ -47,6 +49,20 @@ gulp.task('stylus', function () {
 
 gulp.task('watch', function() {
   gulp.watch('./public/css/*.styl', ['stylus']);
+  gulp.watch('./src/**/*.js', ['babel']);
+});
+
+/*
+ * Use Babel compiler to convert front-end JavaScript from
+ * ES6 to ES5 (more widely supported in browsers)
+ */
+gulp.task('babel', function() {
+   return gulp.src("src/**/*.js")
+//    .pipe(sourcemaps.init())
+    .pipe(babel())
+//    .pipe(concat("all.js"))
+//    .pipe(sourcemaps.write("."))
+    .pipe(gulp.dest("public/js/gen"));
 });
 
 gulp.task('develop', function () {
@@ -68,6 +84,7 @@ gulp.task('develop', function () {
 
 gulp.task('default', [
   'stylus',
+  'babel',
   'develop',
   'watch'
 ]);
