@@ -40,7 +40,6 @@ router.route('/')
     var userId = req.params.user_id;
     tasks.getAllTasks(userId, function(tasks, err) {
       if (!err) {
-        console.log(tasks);
         res.json(tasks);
       } else {
         res.status(err[0]).send(err[1]);
@@ -98,7 +97,6 @@ router.route('/:task_uuid/')
     var taskUuid = req.params.task_uuid;
     tasks.getTask(userId, taskUuid, function(task, err) {
       if (!err) {
-        console.log(task);
         res.json(task);
       } else {
         res.status(err[0]).send(err[1]);
@@ -113,7 +111,6 @@ router.route('/:task_uuid/')
       if (!err) {
         res.status(200).json(task);
       } else {
-        console.log(err);
         res.status(err[0]).send(err[1]);
       }
     });
@@ -133,7 +130,6 @@ router.route('/:task_uuid/dependencies/')
         var depTaskUuid = rslt[2];
         tasks.addDependency(userId, taskUuid, depUserId, depTaskUuid, function(dep, err) {
           var depUri = path.join(req.originalUrl, "/" + depTaskUuid);
-          console.log(depUri);
           res.status(201).location(depUri).json(dep);
         });
       } else {
@@ -147,16 +143,6 @@ router.route('/:task_uuid/dependencies/')
           var userId = req.params.user_id;
           var taskUuid = req.params.task_uuid;
           var otherTaskUuid = req.params.other_task_uuid;
-
-          //   tasks.addDependency(userId, taskUuid, depUserId, depTaskUuid, function(dep, err) {
-          //     var depUri = path.join(req.originalUrl, "/" + depTaskUuid);
-          //     console.log(depUri);
-          //     res.status(201).location(depUri).json(dep);
-          //   });
-          // } else {
-          //   res.sendStatus(400);
-          // }
-
           res.sendStatus(401);  // TODO logic here
 
         })
@@ -165,7 +151,6 @@ router.route('/:task_uuid/dependencies/')
           var taskUuid = req.params.task_uuid;
           var otherTaskUuid = req.params.other_task_uuid;
           tasks.deleteDependency(userId, taskUuid, otherTaskUuid, function(msg, err) {
-            console.log("DELETE " + msg);
             res.sendStatus(200);
           });
 

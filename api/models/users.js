@@ -36,7 +36,6 @@ var getUser = function(userId, callback) {
   session.run(getUserQuery({userId: userId})).then(function(rslt) {
     if (rslt.records.length === 1) {
      var user = new User(userId, rslt.records[0].get("name"));
-     console.log(qtemplate("Found user {{q.id}}: {{q.name}}")({id:userId, name: user.userName}));
      callback(user, null);
    } else {
      callback(null, [404, "User " + userId + " not found"]);

@@ -51,7 +51,6 @@ var getTaskQuery = qtemplate("MATCH (u:User {userId: {{ q.userId }}})",
 var getTask = function(userId, taskUuid, callback) {
   var session = graphdb.session();
   var q = {userId: userId, taskUuid, taskUuid};
-  console.log(getTaskQuery(q));
   session.run(getTaskQuery(q)).then(function(rslt) {
     if (rslt.records.length === 1) {
       callback(recordToTask(taskUuid, rslt.records[0]), null);
@@ -70,12 +69,9 @@ var recordToTask = function(taskUuid, t) {
   if (tcomp) {
     tCompleted = new Date(tcomp.toNumber());
   }
-  console.log("a");
   var task = new Task(taskUuid, t.get("title"), t.get("summary"), t.get("fullText"), tCreated);
-  console.log("b");
   task.completed = t.get("completed");
   task.timeCompleted = tCompleted;
-  console.log(">> " + task);
   return task;
 }
 
@@ -96,23 +92,8 @@ var getFullGraphQuery = qtemplate("MATCH (u:User {userId: {{q.userId}}})",
 
 var getAllTasks = function(userId, callback) {
   var q = {userId: userId};
-  console.log(getAllTasksQuery(q));
-
-
   var session = graphdb.session();
   var tasksPromise = session.run(getAllTasksQuery(q));
-  //
-  // then(function(rslt) {
-  //   var taskList = [];
-  //   for (var i=0; i<rslt.records.length; i++) {
-  //     var tRec = rslt.records[i];
-  //     var taskUuid = tRec.get("uuid");
-  //     taskList.push(recordToTask(taskUuid, tRec));
-  //   }
-  //
-  //   callback(taskList, null);
-  //   session.close();
-  // });
   var graphPromise = session.run(getFullGraphQuery(q));
 
   Promise.all([tasksPromise, graphPromise]).then(function(allResults) {
@@ -124,17 +105,14 @@ var getAllTasks = function(userId, callback) {
       var taskUuid = tRec.get("uuid");
       taskList.push(recordToTask(taskUuid, tRec));
     }
-    console.log(taskList.length);
     var graph = [];
     for (var i=0; i<gRslt.records.length; i++) {
       var gRec = gRslt.records[i];
       var task = gRec.get("t.uuid");
       var dep = gRec.get("d.uuid");
-      // (task) - [:DEPENDS_ON] -> (dep)
       graph.push([task, dep]);
     }
     var taskGraph = {tasks: taskList, graph: graph};
-    console.log(gRslt.records.length);
     callback(taskGraph, null);
   });
 
@@ -163,12 +141,10 @@ var createTask = function(userId, taskData, callback) {
   var q = {userId: userId, taskUuid: newUuid, title: taskData.title,
     summary:taskData.summary, fullText: taskData.fullText,
     created: now.getTime()};
-  console.log(createTaskCypher(q));
 
   var task = new Task(q.taskUuid, q.title, q.summary, q.fullText, now);
   var session  = graphdb.session();
   session.run(createTaskCypher(q)).then(function(rslt) {
-    console.log(rslt);
     // TODO check for errors
     callback(task, null);
     session.close();
@@ -195,8 +171,6 @@ var addDependency = function(userId, taskUuid, depUserId, depTaskUuid, callback)
 
   var dep = {depUuid: depTaskUuid};
 
-  console.log(createDependencyCypher(q));
-
   var session = graphdb.session();
   session.run(createDependencyCypher(q)).then(function(rslt) {
     callback(dep, null);
@@ -213,7 +187,6 @@ var deleteDependencyCypher = qtemplate("MATCH (u1:User {userId: {{q.u1}}})",
 var deleteDependency = function(userId, taskUuid, depUuid, callback) {
   var q = {u1:userId, t1:taskUuid, depUuid: depUuid};
   var session = graphdb.session();
-  console.log(deleteDependencyCypher(q));
   session.run(deleteDependencyCypher(q)).then(function(rslt) {
     callback("totally...", null);
   });
@@ -233,12 +206,8 @@ var updateTask = function(userId, taskUuid, task, callback) {
   var q = _.extend({userId:userId, taskUuid:taskUuid}, task);
   q['timeCreated'] = new Date(task.timeCreated).getTime();
   q['timeCompleted'] = new Date(task.timeCompleted).getTime();
-  console.log(updateTaskCypher(q));
   var session = graphdb.session();
-  console.log("a");
   session.run(updateTaskCypher(q)).then(function(rslt) {
-    console.log(">> !");
-    console.log(rslt);
     callback(task, null);
     session.close();
   });

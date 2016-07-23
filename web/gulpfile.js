@@ -3,7 +3,7 @@ var gulp = require('gulp'),
   plumber = require('gulp-plumber'),
   livereload = require('gulp-livereload'),
   babel = require('gulp-babel'),
-//  sourcemaps = require('gulp-sourcemaps'),
+//sourcemaps = require('gulp-sourcemaps'),
   stylus = require('gulp-stylus'),
   del = require('del');
 
@@ -27,17 +27,6 @@ gulp.task('clean', function() {
         '**/*.bak'
     ]);
 });
-
-//gulp.task('bootstrap', function() {
-//   console.log("Foo...");
-//   var x = config.bowerDir + "/bootstrap-stylus/bootstrap/*.styl";
-//   console.log(x);
-//   gulp.src(x)
-//     .pipe(plumber())
-//     .pipe(stylus())
-//     .pipe(gulp.dest(config.stylePath + "/bootstrap"))
-//     .pipe(livereload());
-// });
 
 gulp.task('stylus', function () {
   gulp.src('./public/css/*.styl')

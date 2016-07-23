@@ -21,13 +21,6 @@ var createProjectCypher = qtemplate("MATCH (u:User {userId: {{ q.userId }}})",
 		"name: '{{q.name}}',", "description: '{{q.description}}',",
 		"timeCreated: {{q.created}},", "completed: false})");
 
-var nextProjectId = function(userId) {
-	console.log("|| =========================================================");
-	console.log("|| = TODO implement LCG Keys for users =====================");
-	console.log("|| =========================================================");
-	return 1;
-}
-
 var getCurrentKeyCypher = qtemplate("MATCH (u:User {userId: {{q.userId}}})",
 		"-[:PROJECT_KEY]->", 
 		"(k:LcgKey)",
@@ -41,27 +34,7 @@ var getCurrentKeyCypher = qtemplate("MATCH (u:User {userId: {{q.userId}}})",
 		"k.fullLoopCount"
 );
 
-//var getCurrentKey = function(userId, callback) {
-//	var q = {
-//		userId : userId
-//	};
-//	console.log(getCurrentKeyCypher(q));
-//	var session = graphdb.session();
-//
-//	session.run(getCurrentKeyCypher(q)).then(function(rslt) {
-//		console.log("!!" + rslt);
-//		var currentKey = rslt.records[0].get('k.currentSeed').toInt();
-//		console.log("> currentKey: " + currentKey);
-//		console.log(rslt.records[0]);
-//		// console.log(">> " + rslt.records[0].get('k').toInt());
-//		session.close();
-//		callback(currentKey);
-//	});
-//
-//}
-
 var recordToLcgKey = function(r) {
-	console.log(r);
 	return new LcgKey(r.get('k.initialSeed').toInt(),
 			r.get('k.multiplier').toInt(),
 			r.get('k.increment').toInt(), 
@@ -72,20 +45,18 @@ var recordToLcgKey = function(r) {
 	
 }
 
-var getCurrentKeyAndIncrement = function(userId, callback) {
+var getCurrentKeyAndIncrement = function(userId) {
 	var session = graphdb.session();
 	var query = getCurrentKeyCypher({
 		userId : userId
 	});
-	console.log(query);
-	session.run(query).then(function(rslt) {
-		console.log("rslt " + rslt);
+	var currentKeyValue = -1;
+	return session.run(query).then(function(rslt) {
 		var key = recordToLcgKey(rslt.records[0]);
-		var currentKeyValue = key.current();
+		currentKeyValue = key.current();
 		var next = key.next();
 		
-		// TODO write updated values
-		console.log("NEXT VALUE IS   " + next);
+		// write updated values
 		var q2 = {userId: userId, currentSeed: key.lcg.value(), fullLoopCount: key.fullLoopCount};
 		var cypher2 = qtemplate("MATCH (u:User {userId: {{q.userId}}})",
 				"-[:PROJECT_KEY]->",
@@ -93,21 +64,12 @@ var getCurrentKeyAndIncrement = function(userId, callback) {
 				"SET k.currentSeed = {{q.currentSeed}}",
 				"SET k.fullLoopCount = {{q.fullLoopCount}}");
 		var query2 = cypher2(q2);
-		
-		
-		console.log("calling back with currentKeyValue " + currentKeyValue);
-		
-		callback(currentKeyValue);
-		////session.close();
-		console.log("-- running query --\n\n" + query2);
 		return session.run(query2);
 		
 	}).then(function(rslt2) {
-		console.log("rslt2 " + rslt2)
 		session.close();
+		return currentKeyValue;	
 	});
-	// console.log("> currentKey: " + currentKey);
-	// return currentKey;
 }
 
 /*
@@ -115,34 +77,32 @@ var getCurrentKeyAndIncrement = function(userId, callback) {
  * "name", and "description"
  */
 var createProject = function(userId, projectData, callback) {
-	var newProjectId = nextProjectId(userId);
+	//var newProjectId = nextProjectId(userId);
+	
+	var keyValPromise = getCurrentKeyAndIncrement(userId);
 	
 	// =================
 	//    TODO use getCurrentKeyAndIncrement here
-	//         figure out how to use Promises cleanly!!!!
+	//         figure out how to use Promises cleanly!!!!we
 	// =================
 	
 	
-	var now = new Date();
-	var q = {
-		userId : userId,
-		projectId : newProjectId,
-		name : projectData.name,
-		description : projectData.description,
-		created : now.getTime()
-	};
-
-	console.log(createProjectCypher(q));
-
-	var project = new Project(q.projectId, q.name, q.description, now);
 	var session = graphdb.session();
-	session.run(createProjectCypher(q)).then(function(rslt) {
-		console.log(rslt);
+	var project = undefined;
+	keyValPromise.then(function(newProjectId) {
+		var now = new Date();
+		var q = {
+			userId : userId,
+			projectId : newProjectId,
+			name : projectData.name,
+			description : projectData.description,
+			created : now.getTime()
+		};
+		project = new Project(q.projectId, q.name, q.description, now);
+		return session.run(createProjectCypher(q));
+	}).then(function(rslt) {
 		// TODO check for errors
-		console.log("Project> " + project);
-		console.log("Project> " + project.name);
 		callback(project, null);
-		console.log("--done");
 		session.close();
 	});
 
