@@ -23,6 +23,8 @@ var ReallyExecuteOperations = true;
 
 var nowNextLaterModule = angular.module('NowNextLater', []);
 
+
+
 /*
  * This is the main Now/Next/Later grid display, where next actions are in the
  * leftmost column and interdependencies are displayed.
@@ -179,10 +181,8 @@ var dependencyListsController = nowNextLaterModule.controller('DependencyListsCo
       $scope.page.taskDialogVisible = true;
       $scope.page.modalVisible = true;
       $timeout(function() {      
-    	  $("#new-task-dialog form input.title").each(function() {
-    		  this.focus();
-    	  });
-      }, 50);
+	  angular.element('#new-task-dialog-form-init').focus();      
+      }, 10);
     };
     var cancelAddNewTaskDialog = function() {
       //console.log("Cancel 'Add New Task' Dialog");
@@ -195,10 +195,8 @@ var dependencyListsController = nowNextLaterModule.controller('DependencyListsCo
       $scope.page.projectDialogVisible = true;
       $scope.page.modalVisible = true;
       $timeout(function() {      
-    	  $("#new-project-dialog form input.name").each(function() {
-    		  this.focus();
-    	  });
-      }, 50);
+	  angular.element('#new-project-dialog-form-init').focus();      
+      }, 10);
 
     };
     var cancelAddNewProjectDialog = function() {
@@ -296,6 +294,10 @@ var dependencyListsController = nowNextLaterModule.controller('DependencyListsCo
         $scope.page.projectDialogVisibe = false;
     	$scope.newProject = newEmptyProject();
     }
+
+      var addProjectToProjectList = function(project) {
+	  console.log("[WARNING] addProjectToProjectList not implemented");
+      }
 
     var markAsDone = function(task) {
       //console.log("onMarkedDone // id :: " + task.id);
@@ -535,6 +537,18 @@ var taskSummaryController = function($http) {
   }
 };
 
+
+nowNextLaterModule.directive('nnlAutoFocus', function($timeout) {
+    return {
+        restrict: 'AC',
+        link: function(_scope, _element) {
+            $timeout(function(){
+                _element[0].focus();
+		console.log("focussing...");
+            }, 10);
+        }
+    };
+});
 
 nowNextLaterModule.component('taskSummary', {
   templateUrl: "templates/task-summary.html",
