@@ -20,6 +20,6 @@
 */
 
 var neo4j = require('neo4j-driver').v1;
-var driver = neo4j.driver("bolt://localhost", neo4j.auth.basic("neo4j", "aftOftyie"));
+var driver = neo4j.driver("bolt://localhost", neo4j.auth.basic("neo4j", "3DTGeDNw35PFpUNUrK5kVQf"));
 
 module.exports = driver;

@@ -11,8 +11,10 @@
     "url": "TODO"
   },
   "dependencies": {
+    "body-parser": "^1.17.2",
     "express": "^4.14.0",
     "graphlib": "^2.1.0",
+    "grunt": "^1.0.1",
     "hbs": "^4.0.0",
     "neo4j-driver": "^1.0.2",
     "set-ds": "^0.1.1",
@@ -20,14 +22,14 @@
   },
   "license": "AGPL-3.0",
   "devDependencies": {
-    "chai": "^3.5.0",
-    "del": "^2.2.1",
+    "chai": "^4.1.2",
+    "del": "^3.0.0",
     "gulp": "^3.9.1",
     "gulp-livereload": "^3.8.1",
-    "gulp-mocha": "^2.2.0",
+    "gulp-mocha": "^4.3.1",
     "gulp-nodemon": "^2.1.0",
     "gulp-plumber": "^1.1.0",
-    "mocha": "^2.5.3"
+    "mocha": "^3.5.0"
   },
   "scripts": {
     "test": "mocha --recursive"
